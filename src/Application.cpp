@@ -19,7 +19,7 @@ public:
     {
         /* Sets mouse to be invisible and its callback */
         glfwSetInputMode( GetContext().renderContext().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
-        mCallbackManager.PerspectiveCameraMouseController();
+        // mCallbackManager.PerspectiveCameraMouseController();
 
         /* example of using callback manager */
         mCallbackManager.mWinResize.push_back( []( JGL::Scene& i, int w, int h )->void
@@ -148,6 +148,15 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
             cam.Move( down );
 
+        constexpr float camSpeed = 100.0f;
+        if ( GetContext().GetKey( GLFW_KEY_LEFT ) == GLFW_PRESS )
+            cam.MoveDirection( speed * -camSpeed, 0.0f );
+        if ( GetContext().GetKey( GLFW_KEY_RIGHT ) == GLFW_PRESS )
+            cam.MoveDirection( speed *  camSpeed, 0.0f );
+        if ( GetContext().GetKey( GLFW_KEY_UP ) == GLFW_PRESS )
+            cam.MoveDirection( 0.0f, speed * -camSpeed );
+        if ( GetContext().GetKey( GLFW_KEY_DOWN ) == GLFW_PRESS )
+            cam.MoveDirection( 0.0f, speed * camSpeed );
     }
 
 private:

@@ -484,7 +484,7 @@ namespace JM {
             auto& p = _Proj.Perspective;
             Mat<4,4> m =
             {
-                { 1.0f / ((std::tan( p.fov * 0.5f ) * (p.height / p.width) )), 0.0f, 0.0f, 0.0f },
+                { 1.0f / ((std::tan( p.fov * 0.5f ) * (p.width / p.height) )), 0.0f, 0.0f, 0.0f },
                 { 0.0f, 1.0f / ( std::tan(p.fov * 0.5f) ), 0.0f, 0.0f },
                 { 0.0f, 0.0f, (p.near + p.far ) / ( p.near - p.far ), ( 2.0f * p.near * p.far ) / ( p.near - p.far ) },
                 { 0.0f, 0.0f, -1.0f, 0.0f }
