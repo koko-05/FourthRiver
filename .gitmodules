@@ -1,0 +1,9 @@
+[submodule "lib/GLFW"]
+	path = lib/GLFW
+	url = https://github.com/glfw/glfw.git
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "lib/JGL/deps/stb"]
+	path = lib/JGL/deps/stb
+	url = https://github.com/nothings/stb
