@@ -50,23 +50,8 @@ glContext& glContext::operator=( const glContext& _o )
     return *this;
 }
 
-glContext::glContext( glContext&& _other )
-{
-    mWindow = _other.mWindow;
-    mSy = _other.mSy;
-    mSx = _other.mSx;
-    _other.mWindow = nullptr;
-    _other.mSx = 0;
-    _other.mSy = 0;
-}
-
 glContext::~glContext()
 {
-    if ( mWindow ) 
-    {
-        glfwSetWindowShouldClose( mWindow, GLFW_TRUE );
-        glfwTerminate();
-    }
 }
 
 glContext::glContext( size_t sx, size_t sy, const char* title )
@@ -75,6 +60,33 @@ glContext::glContext( size_t sx, size_t sy, const char* title )
     SetErrorCallback( ErrorCallback );
 
     CreateWindow( sx, sy, title );
+}
+
+void glContext::Setup() 
+{
+    /* ImGui setup */
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(GetWindow(), true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+
+}
+
+void glContext::Terminate()
+{
+    if ( mWindow ) 
+    {
+        /* ImGui cleanup */
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        /* glfw cleanup */
+        glfwSetWindowShouldClose( mWindow, GLFW_TRUE );
+        glfwTerminate();
+
+        mWindow = nullptr;
+    }
 }
 
 
@@ -105,6 +117,9 @@ bool glContext::CreateWindow( size_t sx, size_t sy, const char* title, bool useD
     SetBlendingFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD );
     glEnable( GL_DEPTH_TEST );
     glfwSwapInterval( 1 );
+
+
+    Setup();
 
     return true;
 }

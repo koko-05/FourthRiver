@@ -36,9 +36,9 @@ void Callbacks::PersCameraMouse(Scene& i, double x, double y )
     i.GetCamera().MoveDirection( dx, dy );
 }
 
-void Callbacks::SetCallbacks( Scene* context )
+void Callbacks::SetCallbacks( glContext* context )
 {
-    auto win = context->GetContext().renderContext().GetWindow();
+    auto win = context->GetWindow();
 
     glfwSetKeyCallback( win, &DefaultKey );
     glfwSetCursorPosCallback( win, &DefaultMouseMove );

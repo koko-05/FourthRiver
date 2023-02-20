@@ -1,4 +1,6 @@
 #pragma once
+#include "JGL/JGL.h"
+#include "JM/JMath.h"
 
 /*
  * Defines an initalizer for the engine and a couple of user defined functions that will
@@ -15,24 +17,35 @@
 
 namespace TigerEngine
 {
-    void Initialize( std::string windowName, int windowWidth, int windowHeight );
+    void Initialize( const char* windowName, int windowWidth, int windowHeight );
     void Initialize( JGL::glContext& context );
+
+    void Terminate();
 
     /* Scene managing */
     template< typename T, typename... _T >
-    int64_t LoadScene( _T&& params );
-    JGL::glContext& GetGLContext(); /* Scene constructor should be called with this */
+    int64_t LoadScene( _T&&... params );
+    JGL::glContext& GetRenderContext(); /* Scene constructor should be called with this */
 
     /* User Defined functions */
     void OnLoad();
+    void OnExit();
     void Main();
+
+    struct SceneData
+    {
+        Scene*  scene;
+        int64_t exitStatus;
+    }
+
+    std::vector< std::unique_ptr<Scene> > Instances;
 }
 
 template< typename T, typename... _T >
-int64_t TigerEngine::LoadScene<T, _T>( _T...&& params )
+SceneData& TigerEngine::LoadScene( _T&&... args )
 {
-    T scene( std::forward( params... ) );
+    TigerEngine::Instances.emplace_back( 
+            std::make_unique<T>( std::forward<T>(args)... ) );
     return scene.Start();
 }
 
-}

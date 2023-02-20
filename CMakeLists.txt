@@ -1,5 +1,5 @@
 # Project 
-set( name OpenGLTest )
+set( name TigerEngine )
 cmake_minimum_required(VERSION 3.12)
 project(${name} VERSION 1.0 LANGUAGES CXX C)
 
@@ -17,7 +17,10 @@ endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "src/Application.cpp" 
+    "examples/Application.cpp" 
+
+    "src/TigerEngine.cpp"
+
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"
     "lib/imgui/imgui_tables.cpp"
@@ -39,7 +42,7 @@ add_executable(${name}
 
 # add include to search path
 target_include_directories(${name} PUBLIC
-    "include" "lib" "lib/imgui")
+    "include" "lib" "lib/imgui" "." )
 
 #compile glfw3 from src, since we dont know what libs to link against
 set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )

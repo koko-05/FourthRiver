@@ -36,8 +36,8 @@ public:
 public:
     void PerspectiveCameraMouseController();
 
-private:
-    void SetCallbacks( Scene* context );
+public:
+    void SetCallbacks( glContext* context );
 
 public:
     /* used for Perspecive Camera Controller */

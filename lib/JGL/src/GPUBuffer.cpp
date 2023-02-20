@@ -18,8 +18,10 @@ GPUBuffer::GPUBuffer( )
 GPUBuffer::~GPUBuffer()
 {
     if ( !mId ) return;
+
     if ( mMappedMem )
         ReleaseAccess();
+
     glDeleteBuffers( 1, &mId );
 }
 

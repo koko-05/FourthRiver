@@ -1,9 +1,6 @@
 #pragma once
 #include <thread>
 #include <chrono>
-#include "imgui/imgui.h"
-#include "imgui/backends/imgui_impl_glfw.h"
-#include "imgui/backends/imgui_impl_opengl3.h"
 #include "common.h"
 #include "OpenGL.h"
 #include "GPUBuffer.h"
@@ -23,8 +20,7 @@
 
 #define FIXED_UPDATE_FPS 30
 #define FIXED_UPDATE_INTERVAL 1000 / FIXED_UPDATE_FPS;
-
-
+#define SCENE_LOAD_FAILURE -1
 
 namespace JGL
 {
@@ -92,9 +88,8 @@ class Scene
 {
 public: /* Initialization and destruction */
      Scene( glContext& rContext );
-     Scene( size_t sx, size_t sy, const char* name );
      Scene( Scene&& v );
-     Scene(  );
+     Scene( );
     ~Scene() {}
 
     /* Copy */
@@ -109,8 +104,8 @@ protected: /* logic */
     virtual void OnExit() {};
 
 public: /* Execution */
-    void Start(); /* When exiting from another Scene that uses the same render Context, be sure to call Setup() and mCallbackManager.SetCallbacks() again */
-    void Exit( );
+    int64_t Start(); 
+    void Exit( int64_t exitStatus = 0 );
     bool IsRunning() const { return mRunningState; }
 
 
@@ -135,16 +130,18 @@ private: /* private loops */
 
 public: /* Callback manager */
     Callbacks     mCallbackManager;
+    size_t        mExitStatus = 0; /* -1 reserverd for scene instatiotion error */
+
+public:
+    glContext*    mRenderContext;
 
 private:
-    glContext     mRenderContext;
     SceneContext  mContext;
     Camera        mDefaultCamera;
 
     Camera*          mCamera          = &mDefaultCamera;
     bool             mRunningState    = 0;
     mutable uint16_t mDrawCallCounter = 0;
-
 
 };
 

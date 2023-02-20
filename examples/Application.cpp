@@ -1,6 +1,5 @@
 #include <unistd.h> // sleep()
-#include "JGL/JGL.h"
-#include "JM/JMath.h"
+#include "TigerEngine.h"
 
 /* 
  * Test1 should be just a basic test to see if
@@ -10,9 +9,10 @@
 class Test1 : public JGL::Scene
 {
 public:
-    Test1() : Scene( 700, 700, "Test One!" ), rectTexture( 0 )
-    {}
-    ~Test1() {}
+    Test1() : 
+        Scene( TigerEngine::GetRenderContext() ),
+        rectTexture( 0 )
+    {  }
 
 public:
     void OnLoad() override
@@ -169,14 +169,73 @@ private:
 };
 
 
+class T1
+{
+public:
+    int64_t Start()
+    {
+        run = true;
+
+        while ( run )
+        {
+            if (glfwGetKey( TigerEngine::GetRenderContext().GetWindow(), GLFW_KEY_TAB ) )
+                return 0;
+
+            /* Frame setup */
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+            /* cleanup for next frame */
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            glfwSwapBuffers( TigerEngine::GetRenderContext().GetWindow( ) );
+            glfwPollEvents();
+        }
+
+        return 0;
+    }
+
+public:
+    bool run;
+
+};
+
+
+
+
+void TigerEngine::OnLoad()
+{
+
+}
+
+void TigerEngine::Main()
+{
+    std::cout << "-- SCENE 1 --" << std::endl;
+    TigerEngine::LoadScene<Test1>();
+
+    std::cout << "-- SCENE 2 --" << std::endl;
+    TigerEngine::LoadScene<Test1>();
+
+    std::cout << "-- SCENE 3 --" << std::endl;
+    TigerEngine::LoadScene<JGL::Scene>( TigerEngine::GetRenderContext() );
+}
+
+void TigerEngine::OnExit()
+{
+
+} 
+
+
+
+
 int main()
 {
-    Test1 scene;
-    scene.Start( );
+    TigerEngine::Initialize( " Test ", 500, 500 );
 
-    while ( scene.IsRunning() )
-        sleep( 10 );
-
+    TigerEngine::Terminate();
+    return 0;
 }
 
 

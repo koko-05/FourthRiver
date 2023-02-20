@@ -19,6 +19,7 @@ Shader::Shader() : mUniformsMap()
 Shader::~Shader()
 {  
     if ( !gl_Program ) return;
+
     glDeleteProgram( gl_Program );
 }
 

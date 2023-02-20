@@ -69,7 +69,7 @@ Texture::~Texture()
     if ( !mId ) return;
 
     glDeleteTextures(1, &mId );
-    stbi_image_free( (void*)mData ); // yes, strike me if you must
+    stbi_image_free( (void*)mData );
 }
 
 void Texture::SetImgDataF( const char* _filePath, GLenum _target, GLenum _desiredFormat, GLenum _inputFormat )

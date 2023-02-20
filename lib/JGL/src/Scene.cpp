@@ -48,25 +48,10 @@ namespace JGL
 /* sets the instance for any glfw callback to use */
 Scene* CALLBACK_INSTANCE_PARAMETER = nullptr; 
 
-Scene::Scene( size_t sx, size_t sy, const char* name )
-    : mRenderContext( sx, sy, name ), 
-      mDefaultCamera( JM::ProjectionType::Perspective, 
-              mRenderContext.Size ().width, mRenderContext.Size().height)
-{
-    Setup();
-}
-
-Scene::Scene(  ) 
-    : mRenderContext(), 
-      mDefaultCamera( JM::ProjectionType::Perspective, 
-              mRenderContext.Size ().width, mRenderContext.Size().height)
-{
-}
-
 Scene::Scene( glContext& rContext ) 
-    : mRenderContext( rContext ), 
+    : mRenderContext( &rContext ), 
       mDefaultCamera( JM::ProjectionType::Perspective, 
-              mRenderContext.Size ().width, mRenderContext.Size().height)
+              mRenderContext->Size ().width, mRenderContext->Size().height)
 {
 
 }
@@ -74,7 +59,7 @@ Scene::Scene( glContext& rContext )
 Scene::Scene( const Scene& v ) 
     : mRenderContext( v.mRenderContext ),
       mDefaultCamera( JM::ProjectionType::Perspective, 
-              mRenderContext.Size ().width, mRenderContext.Size().height)
+              mRenderContext->Size ().width, mRenderContext->Size().height)
 {
 
 }
@@ -95,30 +80,27 @@ Scene& Scene::operator=( const Scene& v )
 
 Scene::Scene( Scene&& v )
     : mCallbackManager( std::move( v.mCallbackManager ) ),
-      mRenderContext( std::move(v.mRenderContext) ),
+      mRenderContext( v.mRenderContext ),
       mDefaultCamera( std::move( v.mDefaultCamera ) ),
       mRunningState( v.mRunningState )
 {
 }
 
-void Scene::Start( )
+int64_t Scene::Start( )
 {
     mRunningState = true;
+    mContext.mRenderContext = mRenderContext;
     Update( );
+    return mExitStatus;
 }
 
 void Scene::Setup(  )
 {
-
-    /* ImGui setup */
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(mRenderContext.GetWindow(), true);
-    ImGui_ImplOpenGL3_Init("#version 330 core");
 }
 
-void Scene::Exit()
+void Scene::Exit( int64_t exitCode )
 {
+    mExitStatus = exitCode;
     OnExit();
     mRunningState = false;
 }
@@ -170,13 +152,17 @@ void Scene::Update()
     double prevTime     = 0.0;
     Scene* prevInstance = this;
 
-    mContext.mRenderContext = &mRenderContext;
     mContext.mStartTime     = programStart;
 
     /* setup callbacks */
-    mCallbackManager.SetCallbacks( this );
+    mCallbackManager.SetCallbacks( mRenderContext );
 
     OnLoad();
+
+    /* Polls events to clear input */
+    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
+    glfwPollEvents();
+    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
 
     while ( mRunningState )
     {
@@ -185,8 +171,8 @@ void Scene::Update()
             std::chrono::duration_cast<std::chrono::microseconds>
             ( programNow - programStart ).count() * .001;
 
-        if ( glfwWindowShouldClose( mRenderContext.GetWindow() ) )
-            mRunningState = false;
+        if ( glfwWindowShouldClose( mRenderContext->GetWindow() ) )
+            Exit();
 
         /* set info */
         mContext.FrameTime = programTime - prevTime;
@@ -204,15 +190,15 @@ void Scene::Update()
 
         /* cleanup for next frame */
         ImGui::Render();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers( mRenderContext.GetWindow() );
+        glfwSwapBuffers( mRenderContext->GetWindow() );
         std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
         glfwPollEvents();
         std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
 
         /* Fixed Update calls */
+        if ( !mRunningState ) return;
+
         constexpr double interval  = FIXED_UPDATE_INTERVAL;
         accumulator               += programTime - prevTime;
         prevTime                   = programTime;
@@ -222,13 +208,6 @@ void Scene::Update()
             FixedUpdate( interval );
         }
     }
-
-    OnExit();
-
-    /* ImGui cleanup */
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 }
 
 void Scene::FixedUpdate( float dt )
