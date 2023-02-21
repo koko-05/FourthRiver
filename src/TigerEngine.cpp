@@ -10,9 +10,11 @@ namespace TigerEngine
 {
 
 static JGL::glContext RENDER_CONTEXT;
+std::vector< std::unique_ptr<JGL::Scene> > Instances;
 
 void Terminate(  )
 {
+    TigerEngine::Instances.clear();
     RENDER_CONTEXT.Terminate();
     TigerEngine::OnExit();
 }

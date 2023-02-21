@@ -20,7 +20,9 @@
 
 #define FIXED_UPDATE_FPS 30
 #define FIXED_UPDATE_INTERVAL 1000 / FIXED_UPDATE_FPS;
+
 #define SCENE_LOAD_FAILURE -1
+#define SCENE_PAUSE -2
 
 namespace JGL
 {
@@ -87,10 +89,10 @@ private:
 class Scene
 {
 public: /* Initialization and destruction */
-     Scene( glContext& rContext );
-     Scene( Scene&& v );
-     Scene( );
-    ~Scene() {}
+    Scene( glContext& rContext );
+    Scene( Scene&& v );
+    Scene( );
+    virtual ~Scene() {}
 
     /* Copy */
     Scene( const Scene& v );
@@ -105,8 +107,9 @@ protected: /* logic */
 
 public: /* Execution */
     int64_t Start(); 
-    void Exit( int64_t exitStatus = 0 );
-    bool IsRunning() const { return mRunningState; }
+    void    Exit( int64_t exitStatus = 0 );
+    void    Pause()     { Exit( SCENE_PAUSE ); }
+    void    Unpause()   { Start(); }
 
 
 public: /* Rendering */

@@ -103,6 +103,9 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_ESCAPE ) == GLFW_PRESS )
             Exit();
 
+        if ( GetContext().GetKey( GLFW_KEY_TAB ) == GLFW_PRESS )
+            Pause();
+
         Render( rect );
 
         // ImGui window
@@ -213,10 +216,16 @@ void TigerEngine::OnLoad()
 void TigerEngine::Main()
 {
     std::cout << "-- SCENE 1 --" << std::endl;
-    TigerEngine::LoadScene<Test1>();
+    TigerEngine::SceneData scene = TigerEngine::LoadScene<Test1>();
 
     std::cout << "-- SCENE 2 --" << std::endl;
     TigerEngine::LoadScene<Test1>();
+
+    if ( scene.scene ) /* Unpause scene 1 if it was paused */
+    {
+        std::cout << "-- SCENE 1 --" << std::endl;
+        scene.scene->Unpause();
+    }
 
     std::cout << "-- SCENE 3 --" << std::endl;
     TigerEngine::LoadScene<JGL::Scene>( TigerEngine::GetRenderContext() );

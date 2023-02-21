@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "JGL/JGL.h"
 #include "JM/JMath.h"
 
@@ -17,6 +18,8 @@
 
 namespace TigerEngine
 {
+    struct SceneData;
+
     void Initialize( const char* windowName, int windowWidth, int windowHeight );
     void Initialize( JGL::glContext& context );
 
@@ -24,7 +27,7 @@ namespace TigerEngine
 
     /* Scene managing */
     template< typename T, typename... _T >
-    int64_t LoadScene( _T&&... params );
+    SceneData LoadScene( _T&&... params );
     JGL::glContext& GetRenderContext(); /* Scene constructor should be called with this */
 
     /* User Defined functions */
@@ -34,18 +37,23 @@ namespace TigerEngine
 
     struct SceneData
     {
-        Scene*  scene;
+        JGL::Scene*  scene;
         int64_t exitStatus;
-    }
+    };
 
-    std::vector< std::unique_ptr<Scene> > Instances;
+    extern std::vector< std::unique_ptr<JGL::Scene> > Instances;
 }
 
 template< typename T, typename... _T >
-SceneData& TigerEngine::LoadScene( _T&&... args )
+TigerEngine::SceneData TigerEngine::LoadScene( _T&&... args )
 {
     TigerEngine::Instances.emplace_back( 
-            std::make_unique<T>( std::forward<T>(args)... ) );
-    return scene.Start();
+            new T( std::forward<_T>(args)... ) );
+    auto status = TigerEngine::Instances.back().get()->Start();
+    if ( status != SCENE_PAUSE ) {
+        TigerEngine::Instances.pop_back();
+        return { nullptr, status };
+    }
+    return { TigerEngine::Instances.back().get(), status };
 }
 
