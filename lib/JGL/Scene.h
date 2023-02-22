@@ -148,23 +148,5 @@ private:
 
 };
 
-    /*
-     *
-     * This is an attempt at creating multiple viewports, but apperantly,
-     * its quite difficult and ImGui doesnt recommend it
-     * 
-    template<class scene, typename... T>
-    static std::thread StartThreaded(T&&... args)
-    {
-        return std::thread( &ThreadedStart<scene, T...>, std::forward<T>(args)... );
-    }
-    template<class scene, typename... T>
-    static void ThreadedStart( T&&... args )
-    {
-        scene lScene( std::forward<T>(args)... );
-        lScene.Start();
-    } */
-
-
 }
 
