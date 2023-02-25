@@ -1,16 +1,14 @@
 #pragma once
 #include <thread>
 #include <chrono>
-#include "common.h"
-#include "OpenGL.h"
-#include "GPUBuffer.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "VertexArray.h"
 #include "JM/JMath.h"
-#include "Transform.h"
-#include "Camera.h"
-#include "Callbacks.h"
+#include "JGL/Mesh.h"
+#include "JGL/common.h"
+#include "JGL/OpenGL.h"
+#include "JGL/Shader.h"
+#include "JGL/Texture.h"
+#include "JGL/Camera.h"
+#include "JGL/Callbacks.h"
 
 /* 
  * Scene abstraction for OpenGL
@@ -19,6 +17,7 @@
  * */
 
 #define FIXED_UPDATE_FPS 30
+#define SCENE_WAIT_TIME 500
 #define FIXED_UPDATE_INTERVAL 1000 / FIXED_UPDATE_FPS;
 
 #define SCENE_LOAD_FAILURE -1
@@ -27,32 +26,14 @@
 namespace JGL
 {
 
-struct Mesh;
-struct Object;
-class  Scene;
+class Scene;
 
-// TODO: make this into its won file, get it from disk, etc 
-// add dynamic geometry, add a combineMesh() that will allocate everything on 
-// the CPU, and upload it onto the GPU once it has combined everyhting  ( for batch rendering  )etc 
-struct Mesh
-{
-    GPUBuffer   VBO;
-    GPUBuffer   IBO;
-    VertexArray VAO;
-
-    GLenum      Primitive;
-};
 
 struct Object
 {
-    Mesh*   mesh;
-    Shader* shader; // TODO: make a material 
-
-    Transform transform;
-
-private:
-    uint32_t glMvpId = 0;
-    friend class Scene;
+    Mesh*    mesh         = nullptr;
+    Shader*  shader       = nullptr;
+    uint32_t cached_MVPid = 0;
 };
 
 struct SceneContext

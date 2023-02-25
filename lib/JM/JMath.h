@@ -17,6 +17,10 @@
 /*
  * TODO: add move constructor and move assigment
  * operator overload
+ *
+ * Add constexpr constructors and functios for projection and the DoNothingMatrix
+ *
+ * rework everything in order to not use function to access the vars in vector
  * */
 
 namespace JM 
@@ -56,7 +60,13 @@ class Vect4;
 
 /* Usefull functions */
 Vect3 EulerAnglesToDirection( float pitch, float yaw );
-constexpr float degToRad( float degs );
+
+Mat<4,4> DoNothingMatrix();
+
+constexpr float degToRad( float degs )
+{
+    return degs * ( JM_PI / 180.0f );
+}
 
 
 

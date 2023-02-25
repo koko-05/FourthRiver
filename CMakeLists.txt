@@ -20,6 +20,11 @@ add_executable(${name}
     "examples/Application.cpp" 
 
     "src/TigerEngine.cpp"
+    "src/Component.cpp"
+    "src/ComponentManager.cpp"
+    "src/Object.cpp"
+    "src/Shader.cpp"
+    "src/Transform.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"
@@ -34,7 +39,7 @@ add_executable(${name}
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 
     "lib/JGL/src/Shader.cpp" "lib/JGL/src/Texture.cpp" 
     "lib/JGL/src/VertexArray.cpp" "lib/JGL/src/Camera.cpp" 
-    "lib/JGL/src/Transform.cpp" "lib/JGL/src/Callbacks.cpp"
+     "lib/JGL/src/Callbacks.cpp"
 
     "lib/glad/glad.c"
 )

@@ -38,9 +38,14 @@ Vect3 EulerAnglesToDirection( float pitch, float yaw )
     };
 }
 
-constexpr float degToRad( float degs )
+Mat<4,4> DoNothingMatrix()
 {
-    return degs * ( JM_PI / 180.0f );
+    return {
+        { 1.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 1.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
+    };
 }
 
 

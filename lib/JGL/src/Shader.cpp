@@ -55,8 +55,7 @@ void Shader::CreateShaderS( const char* _vertexSource, const char* _fragSource)
     ASSERT( _vertexSource, "Vertex Source cannot be nullptr!" );
     ASSERT( _fragSource, "Fragment Source cannot be nullptr!" );
 
-    gl_Program = 
-        CreateShader( _vertexSource, _fragSource );
+    gl_Program = CreateShader( _vertexSource, _fragSource );
 }
 
 void Shader::CreateShaderF( const char* _filePath, const char _delim )

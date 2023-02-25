@@ -47,6 +47,7 @@ namespace TigerEngine
 template< typename T, typename... _T >
 TigerEngine::SceneData TigerEngine::LoadScene( _T&&... args )
 {
+    /* c++ syntax for you, friend */
     TigerEngine::Instances.emplace_back( 
             new T( std::forward<_T>(args)... ) );
     auto status = TigerEngine::Instances.back().get()->Start();

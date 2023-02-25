@@ -1,29 +1,19 @@
+
 #include <unistd.h> // sleep()
 #include "TigerEngine.h"
-#include "Object.h"
-#include "Components.h"
 
 /* 
  * Test1 should be just a basic test to see if
  * everything is working correctly
  * */
 
-
-class Rectangle : 
-    public TigerEngine::Components::Transform,
-    public TigerEngine::Components::Shader
-{
-public:
-
-};
-
 class Test1 : public JGL::Scene
 {
 public:
     Test1() : 
-        Scene( TigerEngine::GetRenderContext() )
-    {
-    }
+        Scene( TigerEngine::GetRenderContext() ),
+        rectTexture( 0 )
+    {  }
 
 public:
     void OnLoad() override
@@ -31,6 +21,13 @@ public:
         /* Sets mouse to be invisible and its callback */
         glfwSetInputMode( GetContext().renderContext().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
         // mCallbackManager.PerspectiveCameraMouseController();
+
+        /* example of using callback manager */
+        mCallbackManager.mWinResize.push_back( []( JGL::Scene& i, int w, int h )->void
+                {
+                    UNUSED( w ); UNUSED( h ); UNUSED( i );
+                    std::cout << "Called win resize!" << std::endl;
+                } );
 
         /* define rectangle data */
         float modelData[] = 
@@ -80,9 +77,21 @@ public:
             va.Add( GL_FLOAT, 2 );
         rectMesh.VAO.AddAttrib( rectMesh.VBO, va );
 
-        rectMesh.Primitive = GL_TRIANGLES;
+        rectShader.CreateShaderF( "src/shader.glsl", '~');
 
-        rect.mesh = &rectMesh;
+        rectMesh.Primitive = GL_TRIANGLES;
+        rect.shader        = &rectShader;
+        rect.mesh          = &rectMesh;
+
+        /* Set shader parameters and texture creation */
+        rect.shader->Bind();
+        uColor = rect.shader->SetUniform4f( "uColor",  { 1.0f, 0.2f, 0.0f, 1.0f } );
+
+        /* Texture creation */
+        rectTexture.SetImgDataF( "assets/textures/test.png", GL_TEXTURE_2D, 
+                                  GL_RGB, GL_RGBA );
+        rect.shader->SetUniform1i( "textureId", rectTexture.GetSlot() );
+
     }
 
     void OnExit() override
@@ -98,13 +107,17 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_TAB ) == GLFW_PRESS )
             Pause();
 
-        rect.Render( this );
+        Render( rect );
 
         // ImGui window
         {
             ImGui::Begin("DEBUG WINDOW!");
             ImGui::Text("%.2fms (%i FPS)", GetContext().FrameTime, GetContext().FPS );
             ImGui::Text("%.2f yaw %.2f pitch", GetCamera().mYaw, GetCamera().mPitch);
+
+            ImGui::SliderFloat3("scale", &*rect.transform.Scale.mVals, 0.0f, 10.0f);
+            ImGui::SliderFloat3("pos", &*rect.transform.Position.mVals, -200.0f, 200.0f);
+            ImGui::SliderFloat3("rotation", &*rect.transform.Rotation.mVals, 0.0f, 1.0f);
 
             ImGui::Text("%i DrawCalls", GetContext().DrawCalls );
             ImGui::End();
@@ -151,10 +164,46 @@ public:
     }
 
 private:
-    JGL::Mesh rectMesh;
-    Rectangle rect;
+    JGL::Object  rect;
+    JGL::Mesh    rectMesh;
+    JGL::Shader  rectShader;
+    JGL::Texture rectTexture;
 
     uint32_t uColor = 0;
+};
+
+
+class T1
+{
+public:
+    int64_t Start()
+    {
+        run = true;
+
+        while ( run )
+        {
+            if (glfwGetKey( TigerEngine::GetRenderContext().GetWindow(), GLFW_KEY_TAB ) )
+                return 0;
+
+            /* Frame setup */
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+            /* cleanup for next frame */
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            glfwSwapBuffers( TigerEngine::GetRenderContext().GetWindow( ) );
+            glfwPollEvents();
+        }
+
+        return 0;
+    }
+
+public:
+    bool run;
+
 };
 
 
@@ -166,7 +215,6 @@ void TigerEngine::OnLoad()
 
 void TigerEngine::Main()
 {
-
     std::cout << "-- SCENE 1 --" << std::endl;
     TigerEngine::SceneData scene = TigerEngine::LoadScene<Test1>();
 
@@ -190,7 +238,6 @@ void TigerEngine::OnExit()
 
 int main()
 {
-
     TigerEngine::Initialize( " Test ", 500, 500 );
 
     TigerEngine::Terminate();

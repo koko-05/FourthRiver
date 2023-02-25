@@ -125,44 +125,49 @@ void Scene::Render( Object& obj, size_t offset ) const
         default: ASSERT( false, "IBO seems to be currupted" );  return; 
     }
 
-    /* TODO: optimize MVP creation */
-    if ( !obj.glMvpId )
-    {
-        obj.glMvpId = 
-            obj.shader->SetUniformMat4( "uMVP", 
-            (obj.transform.GetMatrix() * GetCamera().View() * GetCamera().Projection() ));
-    }
-    else
-    {
-        auto mat = 
-            GetCamera().Projection() * GetCamera().View()  * obj.transform.GetMatrix();
-;
-        obj.shader->
-            SetUniformMat4( obj.glMvpId, mat.Transpose());
-    }
+    glBegin( GL_TRIANGLES );
+    glColor3f( 1.0f, 0.0f, 1.0f );
+    glVertex3f( 0, 0, 0 );
+    glVertex3f( 1, 0, 0 );
+    glVertex3f( 0, 1, 0 );
+    glEnd();
 
-    glDrawElements( obj.mesh->Primitive, IBO.count(), indexSize, (void*)offset);
+
+    glDrawElements( 
+        obj.mesh->Primitive, 
+        IBO.count(), 
+        indexSize, 
+        (void*)offset
+    );
+
+    if ( obj.cached_MVPid ) return;
+
+    obj.cached_MVPid = 
+        obj.shader->GetUniformLocation("uMVP");
 }
 
 
 void Scene::Update()
 {
+    /* waits half a second for input to stop */
+    std::this_thread::sleep_for( std::chrono::milliseconds( SCENE_WAIT_TIME ) );
+
     auto   programStart = std::chrono::high_resolution_clock::now();
     double accumulator  = 0.0;
     double prevTime     = 0.0;
     Scene* prevInstance = this;
 
-    mContext.mStartTime     = programStart;
+    mContext.mStartTime = programStart;
+
+    /* clear input */
+    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
+    glfwPollEvents();
+    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
 
     /* setup callbacks */
     mCallbackManager.SetCallbacks( mRenderContext );
 
     OnLoad();
-
-    /* Polls events to clear input */
-    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
-    glfwPollEvents();
-    std::swap( prevInstance, CALLBACK_INSTANCE_PARAMETER );
 
     while ( mRunningState )
     {

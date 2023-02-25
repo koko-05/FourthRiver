@@ -1,7 +1,5 @@
 #pragma once
 #include "JM/JMath.h"
-#include "JGL/Transform.h"
-
 
 /* 
  * Class decleration for a camera, designed to be
