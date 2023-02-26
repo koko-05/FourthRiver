@@ -9,7 +9,6 @@ layout (location = 1) in vec3 inVertColor;
 layout (location = 2) in vec2 inTexPos;
 
 uniform mat4 uMVP;
-
 out vec4 oColor;
 
 void main()

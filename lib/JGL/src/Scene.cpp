@@ -125,14 +125,6 @@ void Scene::Render( Object& obj, size_t offset ) const
         default: ASSERT( false, "IBO seems to be currupted" );  return; 
     }
 
-    glBegin( GL_TRIANGLES );
-    glColor3f( 1.0f, 0.0f, 1.0f );
-    glVertex3f( 0, 0, 0 );
-    glVertex3f( 1, 0, 0 );
-    glVertex3f( 0, 1, 0 );
-    glEnd();
-
-
     glDrawElements( 
         obj.mesh->Primitive, 
         IBO.count(), 
