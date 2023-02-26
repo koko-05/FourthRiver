@@ -119,10 +119,6 @@ GLuint Shader::CompileShader( GLenum _type, const char* _src )
 
 GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
 {
-    std::cout << "VERTEX SOURCE: \n"   << std::string(_vertexSrc) << "\n" << std::endl;
-    std::cout << "FRAGMENT SOURCE: \n" << std::string(_fragSrc) << "\n\n\n" << std::endl;
-
-
     GLuint pId = glCreateProgram();
     GLuint vs = CompileShader( GL_VERTEX_SHADER, _vertexSrc );
     GLuint fs = CompileShader( GL_FRAGMENT_SHADER, _fragSrc );
@@ -204,7 +200,6 @@ GLint Shader::SetUniform1i( GLint _uniformId,  int _v )
 
 GLint Shader::SetUniformMat4( const char* _uniformName, const JM::Mat<4,4>& _vals )
 {
-    std::cout << "NAMED: "<< _vals << std::endl;
     GLint id = GetUniformLocation( _uniformName );
     glUniformMatrix4fv( id, 1, GL_FALSE, &_vals.mVals[0][0] );
     return id;
@@ -212,7 +207,6 @@ GLint Shader::SetUniformMat4( const char* _uniformName, const JM::Mat<4,4>& _val
 
 GLint Shader::SetUniformMat4( GLint _uniformId, const JM::Mat<4,4>& _vals)
 {
-    std::cout << _vals << std::endl;
     glUniformMatrix4fv( _uniformId, 1, GL_FALSE, &_vals.mVals[0][0] );
     return _uniformId;
 }

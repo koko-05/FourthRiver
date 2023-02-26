@@ -19,8 +19,18 @@ void Shader::Apply( JGL::Scene* scene )
     JGL::Shader* sh = static_cast<JGL::Shader*>(this);
     sh->Bind();
 
-    if ( Component::Object::cached_MVPid )
-        sh->SetUniformMat4( Component::Object::cached_MVPid, Component::Object::mvp_data.Transpose());
+    if ( Component::Object::flags & OBJECT_MVPID_CACHE_BIT  )
+    {
+        sh->SetUniformMat4( 
+            Component::Object::cached_MVPid, 
+            Component::Object::mvp_data.Transpose()
+        );
+    }
+    else
+    {
+        cached_MVPid = sh->GetUniformLocation( "uMVP" );
+        Component::Object::flags |= OBJECT_MVPID_CACHE_BIT;
+    }
 
     Component::Object::shader = sh;
 }

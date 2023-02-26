@@ -131,11 +131,6 @@ void Scene::Render( Object& obj, size_t offset ) const
         indexSize, 
         (void*)offset
     );
-
-    if ( obj.cached_MVPid ) return;
-
-    obj.cached_MVPid = 
-        obj.shader->GetUniformLocation("uMVP");
 }
 
 

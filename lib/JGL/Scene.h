@@ -33,7 +33,6 @@ struct Object
 {
     Mesh*    mesh         = nullptr;
     Shader*  shader       = nullptr;
-    uint32_t cached_MVPid = 0;
 };
 
 struct SceneContext
