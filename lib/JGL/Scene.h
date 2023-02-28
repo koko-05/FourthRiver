@@ -89,7 +89,7 @@ public: /* Execution */
     int64_t Start(); 
     void    Exit( int64_t exitStatus = 0 );
     void    Pause()     { Exit( SCENE_PAUSE ); }
-    void    Unpause()   { Start(); }
+    int64_t Unpause()   { return Start(); }
 
 
 public: /* Rendering */

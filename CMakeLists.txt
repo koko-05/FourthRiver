@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 if(MSVC)
     add_compile_options( /W4 /WX )
 else()
-    add_compile_options( -Wall -Wextra -Wpedantic ) 
+    add_compile_options( -std=c++17 -Wall -Wextra -Wpedantic ) 
     add_compile_options( -ggdb3 -DDEBUG_BUILD )
 endif()
 
@@ -25,6 +25,7 @@ add_executable(${name}
     "src/Object.cpp"
     "src/Shader.cpp"
     "src/Transform.cpp"
+    "src/Mesh.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"

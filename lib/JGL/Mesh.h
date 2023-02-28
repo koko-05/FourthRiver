@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include "JGL/OpenGL.h"
 #include "JGL/GPUBuffer.h"
@@ -15,7 +16,7 @@ struct Mesh
     GPUBuffer   IBO;
     VertexArray VAO;
 
-    GLenum      Primitive;
+    GLenum      Primitive = GL_TRIANGLES;
 };
 
 }

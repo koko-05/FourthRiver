@@ -29,7 +29,7 @@ public: /* OpenGL interface */
     void ReleaseAccess();
 
     void Alloc( size_t size, GLenum type, GLenum accessType );
-    void Alloc( size_t size, GLenum type, GLenum accessType, void* data, size_t elemCount);
+    void Alloc( size_t size, GLenum type, GLenum accessType, const void* data, size_t elemCount);
 
 public: /* Data interface */
     void* data( ); /* gets data, OpenAccess must be called beforehand, if modified, please set count*/

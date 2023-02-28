@@ -8,44 +8,52 @@
  * everything is working correctly
  * */
 
-
-class Rectangle : 
-    public TigerEngine::Components::Transform,
-    public TigerEngine::Components::Shader
+/*
+class CubeGroup :
+    public TigerEngine::Components::Group<Cube>
+    public TigerEngine::Components::Transform
 {
-public:
-
-};
-
-class Test1 : public JGL::Scene
-{
-public:
-    Test1() : 
-        Scene( TigerEngine::GetRenderContext() )
+    CubeGroup()
     {
+        Components::Group<Cube>::LoadGroupFromFile( "assets/chair.obj",  );
+
     }
 
-public:
-    void OnLoad() override
-    {
-        /* Sets mouse to be invisible and its callback */
-        glfwSetInputMode( GetContext().renderContext().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
-        // mCallbackManager.PerspectiveCameraMouseController();
+}
+*/
 
-        /* define rectangle data */
-        float modelData[] = 
-        {   /* 3D pos */        /* Color       */    /* UV   */
+class Cube : 
+    public TigerEngine::Components::Transform,
+    public TigerEngine::Components::Shader,
+    public TigerEngine::Components::Mesh
+{
+public:
+
+
+public:
+    Cube()
+    {
+        // TODO: Components::Mesh::LoadFromFile( "assets/cube.obj", 0 );
+        // VertexAttribute va = 
+        //      Components::Mesh::LoadFromFile( "assets/chair.obj", 0, 4, &genChairLightInfo )
+        // A object ends when you encounter a 'o' or a 'g'
+        // if no o or g exist, and faces are defined, then it's an unnamed obj
+
+        const std::array<float, 64> modelData = 
+        {   
+            /* 3D pos */         /* Color      */    /* UV   */
             -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
              0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
              0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
             -0.5f,  0.5f, 0.0f,  0.5f, 0.5f, 0.5f,   0.0f, 1.0f,
 
-            -0.5f, -0.5f, -1.0f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-             0.5f, -0.5f, -1.0f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-             0.5f,  0.5f, -1.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-            -0.5f,  0.5f, -1.0f,  0.5f, 0.5f, 0.5f,   0.0f, 1.0f
+            -0.5f, -0.5f, -1.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+             0.5f, -0.5f, -1.0f, 0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+             0.5f,  0.5f, -1.0f, 0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+            -0.5f,  0.5f, -1.0f, 0.5f, 0.5f, 0.5f,   0.0f, 1.0f
         };
-        uint32_t modelIndices[] = // Counter clockwise winding
+
+        const std::array<uint16_t, 36> cubeIndices =
         {
             /* front face */
             0, 1, 2,
@@ -67,22 +75,34 @@ public:
             4, 5, 1,
         };
 
-        /* Set rectangle data */
-        rectMesh.VBO.Alloc( sizeof(modelData), GL_ARRAY_BUFFER, 
-                            GL_STATIC_DRAW, modelData, sizeof( modelData ) / sizeof( modelData[0] ) );
+        Mesh::LoadFromData( modelData, cubeIndices, GL_STATIC_DRAW );
+        JGL::VertexAttribute attrib;
+                             attrib.Add( GL_FLOAT, 3 );
+                             attrib.Add( GL_FLOAT, 3 );
+                             attrib.Add( GL_FLOAT, 2 );
+        Mesh::VAO.AddAttrib( Mesh::VBO, attrib );
+    }
 
-        rectMesh.IBO.Alloc( sizeof( modelIndices), GL_ELEMENT_ARRAY_BUFFER, 
-                            GL_STATIC_DRAW, modelIndices,  sizeof( modelIndices ) / sizeof( modelIndices[0] ) );
+};
 
-        JGL::VertexAttribute va;
-            va.Add( GL_FLOAT, 3 );
-            va.Add( GL_FLOAT, 3 );
-            va.Add( GL_FLOAT, 2 );
-        rectMesh.VAO.AddAttrib( rectMesh.VBO, va );
+class Test1 : public JGL::Scene
+{
+public:
+    Test1() : 
+        Scene( TigerEngine::GetRenderContext() )
+    {
+    }
 
-        rectMesh.Primitive = GL_TRIANGLES;
+public:
+    /* Objects */
+    Cube cube;
 
-        rect.mesh = &rectMesh;
+public:
+    void OnLoad() override
+    {
+        /* Sets mouse to be invisible and its callback */
+        // glfwSetInputMode( GetContext().renderContext().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+        // mCallbackManager.PerspectiveCameraMouseController();
     }
 
     void OnExit() override
@@ -98,7 +118,7 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_TAB ) == GLFW_PRESS )
             Pause();
 
-        rect.Render( this );
+        cube.Render( this );
 
         // ImGui window
         {
@@ -149,12 +169,6 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_DOWN ) == GLFW_PRESS )
             cam.MoveDirection( 0.0f, speed * camSpeed );
     }
-
-private:
-    JGL::Mesh rectMesh;
-    Rectangle rect;
-
-    uint32_t uColor = 0;
 };
 
 
@@ -178,9 +192,6 @@ void TigerEngine::Main()
         std::cout << "-- SCENE 1 --" << std::endl;
         scene.scene->Unpause();
     }
-
-    std::cout << "-- SCENE 3 --" << std::endl;
-    TigerEngine::LoadScene<JGL::Scene>( TigerEngine::GetRenderContext() );
 }
 
 void TigerEngine::OnExit() 
@@ -192,7 +203,6 @@ int main()
 {
 
     TigerEngine::Initialize( " Test ", 500, 500 );
-
     TigerEngine::Terminate();
     return 0;
 }
