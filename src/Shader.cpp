@@ -9,6 +9,7 @@ namespace Components
 
 Shader::Shader()
 {
+    // TODO: if you already created one, why create another? Use a global, friend
     JGL::Shader::CreateShaderF( "src/shader.glsl", '~' );
 }
 

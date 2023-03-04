@@ -5,8 +5,7 @@
 #version 330 core
 
 layout (location = 0) in vec3 inPosition;
-layout (location = 1) in vec3 inVertColor;
-layout (location = 2) in vec2 inTexPos;
+layout (location = 1) in vec2 inTexPos;
 
 uniform mat4 uMVP;
 out vec4 oColor;
@@ -15,7 +14,7 @@ void main()
 {
     gl_Position = uMVP * vec4( inPosition, 1.0 );
 
-    oColor      = vec4( inVertColor, 1.0 );
+    oColor      = vec4( 1.0, 1.0 );
 }
 
 

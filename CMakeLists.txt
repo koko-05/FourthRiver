@@ -17,7 +17,7 @@ endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "examples/Application.cpp" 
+    "examples/Cube.cpp" 
 
     "src/TigerEngine.cpp"
     "src/Component.cpp"

@@ -4,8 +4,8 @@
 #include "Components.h"
 
 /* 
- * Test1 should be just a basic test to see if
- * everything is working correctly
+ * Loads a kitten from a file and dsiplays it
+ *
  * */
 
 /*
@@ -22,7 +22,7 @@ class CubeGroup :
 }
 */
 
-class Cube : 
+class Kitten : 
     public TigerEngine::Components::Transform,
     public TigerEngine::Components::Shader,
     public TigerEngine::Components::Mesh
