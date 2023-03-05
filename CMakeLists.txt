@@ -3,21 +3,21 @@ set( name TigerEngine )
 cmake_minimum_required(VERSION 3.12)
 project(${name} VERSION 1.0 LANGUAGES CXX C)
 
-# Request C++ 11 standard features
-set(CMAKE_CXX_STANDARD 11)
+# Request C++ 17 standard features
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set warning level
 if(MSVC)
     add_compile_options( /W4 /WX )
 else()
-    add_compile_options( -std=c++17 -Wall -Wextra -Wpedantic ) 
+    add_compile_options( -Wall -Wextra -Wpedantic ) 
     add_compile_options( -ggdb3 -DDEBUG_BUILD )
 endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "examples/Cube.cpp" 
+    "examples/Kitten.cpp" 
 
     "src/TigerEngine.cpp"
     "src/Component.cpp"

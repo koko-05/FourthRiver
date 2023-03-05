@@ -13,7 +13,7 @@ void Mesh::Apply( JGL::Scene* sc )
 }
 
 
-void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileVectors>& vects, std::vector<uint32_t>& indices)
+void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileData>& vects, std::vector<uint32_t>& indices)
 {
     static char lineBuffer[256]= { 0 };
 
@@ -23,10 +23,10 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileVec
     std::ifstream file( filePath );
     if ( !file.is_open() ) return;
 
-
     char first;
+    bool definesUnnamedObject = false;
+    uint32_t hitCount = 0, oCount = 0;
     std::unordered_map<uint32_t, uint32_t> indexMap;
-
     while ( !file.eof() )
     {
         memset( lineBuffer, 0, 256 );
@@ -36,7 +36,18 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileVec
 
         line >> first;
 
+        if ( first == 'f' && oCount == 0 )
+            definesUnnamedObject = true;
+
         if ( first == 'o' )
+        {
+            if ( oCount > 0 || definesUnnamedObject || hitCount )
+                oCount++;
+            else
+                hitCount++;
+        }
+
+        if ( first == 'o' oCount == index )
         {
             std::string fname;
             line >> fname;
@@ -44,7 +55,8 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileVec
             continue;
         }
 
-        if ( first != 'f' ) continue;
+        if ( oCount != index ) continue;
+        if ( first != 'f' )    continue;
 
         char vertexBuffer[16] = { 0 };
         line.getLine( vertexBuffer, 16, ' ' );
@@ -142,20 +154,66 @@ void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
         }
 
     }
-
 }
 
-void Mesh::CreateVertexBuffer( GLenum access, ... )
+Mesh::FileData::uniq_ptr Mesh::FileData::GetDataFromVector( std::vector<Mesh::FileData>& vect, size_t& out_size, size_t& out_eSize )
 {
-  constexpr auto IBOacc = GL_STATIC_DRAW;
-  JGL::Mesh::VBO.Alloc( verts.size()   * sizeof(vT), GL_ARRAY_BUFFER, access, verts.data(),vSize );
-  JGL::Mesh::IBO.Alloc( indices.size() * sizeof(iT), GL_ELEMENT_ARRAY_BUFFER, IBOacc, indices.data(),iSize);
+    size_t elementSize;
+    auto& o = vect[0];
+    elementSize += o.pos   ? sizeof( o.pos.value() ) : 0;
+    elementSize += o.uvs   ? sizeof( o.uvs.value() ) : 0;
+    elementSize += o.norms ? sizeof( o.norms.value() ) : 0;
 
-  JGL::Mesh::Primitive = GL_TRIANGLES;
+    uniq_ptr ptr( malloc( elementSize * vect.size() ), free );
+    auto c_ptr = (char*)ptr.get();
 
+    for ( size_t i = 0; i < vect.size(); i++ )
+    {
+        if ( vect[i].pos ) 
+            ((JM::Vect3*)(ptr + i * elementSize + 0 ))[0] = vect[i].pos;
+        if ( vect[i].uvs ) 
+            ((JM::Vect2*)(ptr + i * elementSize + sizeof( JM::Vect3 ) ))[0] = vect[i].pos;
+        if ( vect[i].uvs ) 
+            ((JM::Vect2*)(ptr + i * elementSize + sizeof(JM::Vect3) + sizeof(JM::Vect2)))[0] = vect[i].pos;
+    }
+
+    out_size  = finalSize;
+    out_eSize = finalElementSize;
+
+    return std::move( ptr );
 }
 
-void CreateIndexBuffer( std::vector<uint32_t>& indices );
+
+void Mesh::CreateVertexBuffer( GLenum access, int num, ... )
+{
+    va_list args;
+
+    va_start( args, num );
+    void*  finalData = nullptr;
+    size_t finalSize = 0;
+    size_t finalElementSize = 0;
+
+    for ( size_t i = 0; i < num / 3; i++ )
+    {
+        auto data   = va_arg( args, void* );
+        auto size   = va_arg( args, size_t );
+        auto e_size = va_arg( args, size_t );
+
+        realloc( finalData, finalSize + size );
+        memcpy( (char*)finalData + (char*)finalSize, data, size );
+
+        finalElementSize += e_size;
+        finalSize        += size;
+    }
+
+    JGL::Mesh::VBO.Alloc( finalSize, GL_ARRAY_BUFFER, access, finalData, finalElementSize );
+    JGL::Mesh::Primitive = GL_TRIANGLES;
+}
+
+void Mesh::CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize )
+{
+    JGL::Mesh::IBO.Alloc( size, GL_ELEMENT_ARRAY_BUFFER, access, indices, elemSize);
+}
 
 
 uint16_t Mesh::GetID() const

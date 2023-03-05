@@ -1,5 +1,8 @@
 #pragma once
 #include <array>
+#include <memory>
+#include <optional>
+#include "JM/JMath.h"
 #include "JGL/Mesh.h"
 #include "Component.h"
 
@@ -15,7 +18,7 @@ class Mesh
 {
 public:
   static constexpr uint16_t mId = 3;
-  using ref = std::reference_wrapper;
+  struct FileData;
 
 
 public:
@@ -24,16 +27,20 @@ public:
                      const std::array<iT,iSize>& indices, 
                      GLenum access = GL_STATIC_DRAW );
 
-  void LoadFromFile( const char* filePath, size_t index, std::vector<FileVectors>& vects, std::vector<uint32_t>& indices );
+  void LoadFromFile( const char* filePath, size_t index, std::vector<FileData>& vects, std::vector<uint32_t>& indices );
 
-  void CreateVertexBuffer( GLenum access, ... ); /* Args MUST follow pattern: std::vector, size_t elemSize*/
-  void CreateIndexBuffer( std::vector<uint32_t>& indices );
+  void CreateVertexBuffer( GLenum access, int num, ... ); /* Args MUST follow pattern: void* data, size_t size, size_t elem_size*/
+  void CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize );
 
 public:
   struct FileData {
     std::optional<JM::Vect3> pos; 
     std::optional<JM::Vect2> uvs;
     std::optional<JM::Vect3> norms; 
+
+    using uniq_ptr = std::unique_ptr<void, void(*)(void*)>;
+
+    static uniq_ptr GetDataFromVector( std::vector<FileData>& vect, size_t& out_size, size_t& out_eSize );
   };
 
   static std::unordered_map<std::string, JM::Vect3> mFilesPosition;

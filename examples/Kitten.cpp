@@ -17,14 +17,16 @@ public:
 
 
 public:
-    Cube()
+    Kitten()
     {
-        std::vector<uint32_t>  indices;
-        std::vector<JM::Vect3> pos;
-        std::vector<JM::Vect2> uvs;
-        Mesh::LoadFromFile( "assets/kitten.obj", 0, indices, pos, uvs, std::nullopt );
-        Mesh::CreateVertexBuffer( pos, uvs );
-        Mesh::CreateIndexBuffer( indices );
+        std::vector<Mesh::FileData> fileData;
+        std::vector<uint32_t>       fileIndices;
+        Mesh::LoadFromFile( "assets/kitten.obj", 0, fileData, fileIndices );
+        size_t dataSize;
+        size_t dataESize;
+        auto fileDataPtr = Mesh::FileData::GetDataFromVector(fileData, dataSize, dataESize);
+        Mesh::CreateVertexBuffer( GL_STATIC_DRAW, 3, fileDataPtr.get(), dataSize, dataESize );
+        Mesh::CreateIndexBuffer( GL_STATIC_DRAW, fileIndices.data(), fileIndices.size() * sizeof( uint32_t ), sizeof( uint32_t ) );
         JGL::VertexAttribute attrib;
                              attrib.Add( GL_FLOAT, 3 );
                              attrib.Add( GL_FLOAT, 2 );
@@ -43,20 +45,14 @@ public:
 
 public:
     /* Objects */
-    Cube cube;
+    Kitten kitten;
 
 public:
     void OnLoad() override
-    {
-        /* Sets mouse to be invisible and its callback */
-        // glfwSetInputMode( GetContext().renderContext().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
-        // mCallbackManager.PerspectiveCameraMouseController();
-    }
+    {  }
 
     void OnExit() override
-    {
-
-    }
+    {  }
 
     void OnUpdate() override
     {
@@ -66,7 +62,7 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_TAB ) == GLFW_PRESS )
             Pause();
 
-        cube.Render( this );
+        kitten.Render( this );
 
         // ImGui window
         {
@@ -128,18 +124,8 @@ void TigerEngine::OnLoad()
 
 void TigerEngine::Main()
 {
-
     std::cout << "-- SCENE 1 --" << std::endl;
     TigerEngine::SceneData scene = TigerEngine::LoadScene<Test1>();
-
-    std::cout << "-- SCENE 2 --" << std::endl;
-    TigerEngine::LoadScene<Test1>();
-
-    if ( scene.scene ) /* Unpause scene 1 if it was paused */
-    {
-        std::cout << "-- SCENE 1 --" << std::endl;
-        scene.scene->Unpause();
-    }
 }
 
 void TigerEngine::OnExit() 
