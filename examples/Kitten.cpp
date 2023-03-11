@@ -21,7 +21,7 @@ public:
     {
         std::vector<Mesh::FileData> fileData;
         std::vector<uint32_t>       fileIndices;
-        Mesh::LoadFromFile( "assets/kitten.obj", 0, fileData, fileIndices );
+        Mesh::LoadFromFile( "assets/cat.obj", 0, fileData, fileIndices );
         size_t dataSize;
         size_t dataESize;
         auto fileDataPtr = Mesh::FileData::GetDataFromVector(fileData, dataSize, dataESize);
@@ -56,11 +56,10 @@ public:
 
     void OnUpdate() override
     {
+        static float scaleVal = 0.01f;
+
         if ( GetContext().GetKey( GLFW_KEY_ESCAPE ) == GLFW_PRESS )
             Exit();
-
-        if ( GetContext().GetKey( GLFW_KEY_TAB ) == GLFW_PRESS )
-            Pause();
 
         kitten.Render( this );
 
@@ -68,11 +67,12 @@ public:
         {
             ImGui::Begin("DEBUG WINDOW!");
             ImGui::Text("%.2fms (%i FPS)", GetContext().FrameTime, GetContext().FPS );
-            ImGui::Text("%.2f yaw %.2f pitch", GetCamera().mYaw, GetCamera().mPitch);
-
+            ImGui::SliderFloat( "scale", &scaleVal, 0.0f, 0.1f  );
             ImGui::Text("%i DrawCalls", GetContext().DrawCalls );
             ImGui::End();
         }
+
+        kitten.Scale = { scaleVal };
 
     }
 
@@ -125,7 +125,7 @@ void TigerEngine::OnLoad()
 void TigerEngine::Main()
 {
     std::cout << "-- SCENE 1 --" << std::endl;
-    TigerEngine::SceneData scene = TigerEngine::LoadScene<Test1>();
+    TigerEngine::LoadScene<Test1>();
 }
 
 void TigerEngine::OnExit() 

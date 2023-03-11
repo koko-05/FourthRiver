@@ -3,8 +3,8 @@ set( name TigerEngine )
 cmake_minimum_required(VERSION 3.12)
 project(${name} VERSION 1.0 LANGUAGES CXX C)
 
-# Request C++ 17 standard features
-set(CMAKE_CXX_STANDARD 17)
+# Request C++ 20 standard features
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set warning level

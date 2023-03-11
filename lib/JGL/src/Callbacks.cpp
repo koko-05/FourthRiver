@@ -41,7 +41,7 @@ void Callbacks::SetCallbacks( glContext* context )
     auto win = context->GetWindow();
 
     glfwSetKeyCallback( win, &DefaultKey );
-    glfwSetCursorPosCallback( win, &DefaultMouseMove );
+    //glfwSetCursorPosCallback( win, &DefaultMouseMove ); TODO: if this is enabled ImGui cant work with mouse, make this configurable
     glfwSetScrollCallback( win, &DefaultScroll );
     glfwSetWindowSizeCallback( win, &DefaultWinResize );
 }

@@ -1,9 +1,18 @@
 #include "Mesh.h"
+#include <sstream>
+#include <fstream>
 
 namespace TigerEngine
 {
 namespace Components
 {
+
+namespace Files
+{
+  std::unordered_map<std::string, std::vector<JM::Vect3>> FilePositions;
+  std::unordered_map<std::string, std::vector<JM::Vect3>> FileNormals;
+  std::unordered_map<std::string, std::vector<JM::Vect2>> FileUVs;
+}
 
 void Mesh::Apply( JGL::Scene* sc )
 {
@@ -17,8 +26,8 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileDat
 {
     static char lineBuffer[256]= { 0 };
 
-    if ( mFilesPosition[filePath].empty() )
-        LoadVertexesFromFile( filePath, index );
+    if ( Files::FilePositions[filePath].empty() )
+        LoadVertexesFromFile( filePath );
 
     std::ifstream file( filePath );
     if ( !file.is_open() ) return;
@@ -47,62 +56,78 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileDat
                 hitCount++;
         }
 
-        if ( first == 'o' oCount == index )
+        if ( first == 'o' && oCount == index )
         {
             std::string fname;
             line >> fname;
-            strcpy( name, fname.c_str(), MAX_OSIZE );
+            strncpy( name, fname.c_str(), MAX_OSIZE );
             continue;
         }
 
         if ( oCount != index ) continue;
         if ( first != 'f' )    continue;
 
-        char vertexBuffer[16] = { 0 };
-        line.getLine( vertexBuffer, 16, ' ' );
-
-        for ( int i = 0; i < 16; i++ ) if ( vertexBuffer[i] == '/' ) vertexBuffer[i] = ' ';
-        std::istringstream vStr( vertexBuffer );
-
-        uint32_t indexVertex = 0, indexUv = 0, indexNormal = 0;
-        vStr >> indexVertex;
-        char w; vStr.get( w ); 
-
-        if ( vStr.peek() == ' ' )
+        char junk;
+        line.get( junk );
+        for ( int c = 0; c < 3; c++ )
         {
-            vStr << indexNormal;
-            sendData( indexMap, indexVertex, indexUv, indexNormal, vects, indices );
-            continue;
+            char vertexBuffer[16] = { 0 };
+            line.getline( vertexBuffer, 16, ' ' );
+
+            for ( int i = 0; i < 16; i++ ) if ( vertexBuffer[i] == '/' ) vertexBuffer[i] = ' ';
+            std::istringstream vStr( vertexBuffer );
+
+            uint32_t indexVertex = 0, indexUv = 0, indexNormal = 0;
+            vStr >> indexVertex;
+
+            if ( vStr.eof() || vStr.peek() != ' ' ) 
+            {
+                sendData( indexMap, indexVertex, 0, 0, vects, indices, filePath );
+                continue;
+            }
+            else
+            {
+                vStr.get( junk ); 
+                if ( !vStr.eof() && vStr.peek() == ' ' )
+                {
+                    vStr >> indexNormal;
+                    sendData( indexMap, indexVertex, 0, indexNormal, vects, indices, filePath );
+                    continue;
+                }
+
+                vStr >> indexUv;
+
+                if ( !vStr.eof() && vStr.peek() == ' ' )
+                    vStr >> indexNormal;
+
+                sendData( indexMap, indexVertex, indexUv, indexNormal, vects, indices, filePath );
+                continue;
+            }
         }
-
-        vStr << indexUv;
-
-        if ( vStr.peek() == ' ' )
-        {
-            vStr << indexNormal;
-            sendData( indexMap, indexVertex, indexUv, indexNormal, vects, indices );
-            continue;
-        }
-
-        sendData( indexMap, indexVertex, indexUv, indexNormal, vects, indices );
     }
 }
 
-void Mesh::sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t indexVertex, uint32_t indexUvs, uint32_t indexNormal, std::vector<FileData>& vects, std::vector<uint32_t>& indices )
+void Mesh::sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t indexVertex, uint32_t indexUvs, uint32_t indexNormal, std::vector<FileData>& vects, std::vector<uint32_t>& indices, const char* filePath )
 {
+    if ( !indexVertex ) return;
+
     if ( !indexMap.contains(indexVertex) )
     {
-        JM::Vect3 position = indexVertex ? mFilesPosition[filePath][indexVertex - 1] : std::nullopt;
-        JM::Vect2 uv       = indexUv     ? mFilesUVs[filePath][indexUv - 1]          : std::nullopt;
-        JM::Vect3 normal   = indexNormal ? mFilesNormal[filePath][indexNormal - 1]   : std::nullopt;
-        vects.push_back( { position, uv, normal } );
+        auto position = indexVertex ? 
+            std::make_optional(Files::FilePositions[filePath][indexVertex - 1]) : std::nullopt;
+        auto uv       = indexUvs    ?
+            std::make_optional(Files::FileUVs[filePath][indexUvs - 1]) : std::nullopt;
+        auto normal   = indexNormal ?
+            std::make_optional(Files::FileNormals[filePath][indexNormal - 1]) : std::nullopt;
+
+        vects.push_back( FileData( position, uv, normal ) );
         indexMap[ indexVertex ] = vects.size() - 1;
     }
 
     indices.push_back( indexMap[ indexVertex ] );
 }
 
-void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
+void Mesh::LoadVertexesFromFile( const char* filePath )
 {
     static char lineBuffer[256]= { 0 };
 
@@ -113,9 +138,9 @@ void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
         return;
     }
 
-    auto& verts = mFilesPosition[filePath];
-    auto& uvs   = mFilesUVs[filePath];
-    auto& norms = mFilesNormals[filePath];
+    auto& verts = Files::FilePositions[filePath];
+    auto& uvs   = Files::FileUVs[filePath];
+    auto& norms = Files::FileNormals[filePath];
 
     char first;
     while ( !file.eof() )
@@ -130,7 +155,7 @@ void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
         if ( first != 'v' ) continue;
 
         char second = '\0';
-        line >> second;
+        line.get( second );
 
         if ( second == 't' )
         {
@@ -150,7 +175,7 @@ void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
         {
             JM::Vect3 pos;
             line >> pos.x() >> pos.y() >> pos.z();
-            norms.push_back( pos );
+            verts.push_back( pos );
         }
 
     }
@@ -158,7 +183,7 @@ void Mesh::LoadVertexesFromFile( const char* filePath, size_t index )
 
 Mesh::FileData::uniq_ptr Mesh::FileData::GetDataFromVector( std::vector<Mesh::FileData>& vect, size_t& out_size, size_t& out_eSize )
 {
-    size_t elementSize;
+    size_t elementSize = 0;
     auto& o = vect[0];
     elementSize += o.pos   ? sizeof( o.pos.value() ) : 0;
     elementSize += o.uvs   ? sizeof( o.uvs.value() ) : 0;
@@ -170,17 +195,17 @@ Mesh::FileData::uniq_ptr Mesh::FileData::GetDataFromVector( std::vector<Mesh::Fi
     for ( size_t i = 0; i < vect.size(); i++ )
     {
         if ( vect[i].pos ) 
-            ((JM::Vect3*)(ptr + i * elementSize + 0 ))[0] = vect[i].pos;
+            ((JM::Vect3*)((size_t)c_ptr + i * elementSize + 0 ))[0] = vect[i].pos.value();
         if ( vect[i].uvs ) 
-            ((JM::Vect2*)(ptr + i * elementSize + sizeof( JM::Vect3 ) ))[0] = vect[i].pos;
-        if ( vect[i].uvs ) 
-            ((JM::Vect2*)(ptr + i * elementSize + sizeof(JM::Vect3) + sizeof(JM::Vect2)))[0] = vect[i].pos;
+            ((JM::Vect2*)((size_t)c_ptr + i * elementSize + sizeof( JM::Vect3 ) ))[0] = vect[i].uvs.value();
+        if ( vect[i].norms ) 
+            ((JM::Vect3*)((size_t)c_ptr + i * elementSize + sizeof(JM::Vect3) + sizeof(JM::Vect2)))[0] = vect[i].norms.value();
     }
 
-    out_size  = finalSize;
-    out_eSize = finalElementSize;
+    out_size  = elementSize * vect.size();
+    out_eSize = elementSize;
 
-    return std::move( ptr );
+    return ptr;
 }
 
 
@@ -193,26 +218,26 @@ void Mesh::CreateVertexBuffer( GLenum access, int num, ... )
     size_t finalSize = 0;
     size_t finalElementSize = 0;
 
-    for ( size_t i = 0; i < num / 3; i++ )
+    for ( int i = 0; i < num / 3; i++ )
     {
         auto data   = va_arg( args, void* );
         auto size   = va_arg( args, size_t );
         auto e_size = va_arg( args, size_t );
 
-        realloc( finalData, finalSize + size );
-        memcpy( (char*)finalData + (char*)finalSize, data, size );
+        finalData = realloc( finalData, finalSize + size );
+        memcpy( (char*)((size_t)finalData + finalSize), data, size );
 
         finalElementSize += e_size;
         finalSize        += size;
     }
 
-    JGL::Mesh::VBO.Alloc( finalSize, GL_ARRAY_BUFFER, access, finalData, finalElementSize );
+    JGL::Mesh::VBO.Alloc( finalSize, GL_ARRAY_BUFFER, access, finalData, finalSize / finalElementSize );
     JGL::Mesh::Primitive = GL_TRIANGLES;
 }
 
 void Mesh::CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize )
 {
-    JGL::Mesh::IBO.Alloc( size, GL_ELEMENT_ARRAY_BUFFER, access, indices, elemSize);
+    JGL::Mesh::IBO.Alloc( size, GL_ELEMENT_ARRAY_BUFFER, access, indices, size / elemSize);
 }
 
 

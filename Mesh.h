@@ -2,6 +2,7 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include "JM/JMath.h"
 #include "JGL/Mesh.h"
 #include "Component.h"
@@ -11,6 +12,13 @@ namespace TigerEngine
 {
 namespace Components
 {
+
+namespace Files
+{
+  extern std::unordered_map<std::string, std::vector<JM::Vect3>> FilePositions;
+  extern std::unordered_map<std::string, std::vector<JM::Vect3>> FileNormals;
+  extern std::unordered_map<std::string, std::vector<JM::Vect2>> FileUVs;
+}
 
 class Mesh
     : public Component,
@@ -32,6 +40,11 @@ public:
   void CreateVertexBuffer( GLenum access, int num, ... ); /* Args MUST follow pattern: void* data, size_t size, size_t elem_size*/
   void CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize );
 
+private:
+
+  void LoadVertexesFromFile( const char* filePath);
+  void sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t indexVertex, uint32_t indexUvs, uint32_t indexNormal, std::vector<FileData>& vects, std::vector<uint32_t>& indices, const char* filePath );
+
 public:
   struct FileData {
     std::optional<JM::Vect3> pos; 
@@ -43,9 +56,6 @@ public:
     static uniq_ptr GetDataFromVector( std::vector<FileData>& vect, size_t& out_size, size_t& out_eSize );
   };
 
-  static std::unordered_map<std::string, JM::Vect3> mFilesPosition;
-  static std::unordered_map<std::string, JM::Vect3> mFilesNormals;
-  static std::unordered_map<std::string, JM::Vect2> mFilesUVs;
 
 private:
 
