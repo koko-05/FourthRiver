@@ -20,7 +20,7 @@ void Shader::Apply( JGL::Scene* scene )
     JGL::Shader* sh = static_cast<JGL::Shader*>(this);
     sh->Bind();
 
-    if ( Component::Object::flags & OBJECT_MVPID_CACHE_BIT  )
+    if ( Component::Object::flags & OBJECT_MVPID_CACHE_BIT )
     {
         sh->SetUniformMat4( 
             Component::Object::cached_MVPid, 

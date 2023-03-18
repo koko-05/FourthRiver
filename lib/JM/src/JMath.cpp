@@ -20,8 +20,8 @@ Projection::Projection( ProjectionType t, int w, int h )
     else if ( t == ProjectionType::Perspective )
     {
         Type = t;
-        Perspective.near    =   0.1f;
-        Perspective.far     =  100.0f;
+        Perspective.near    =  0.01f;
+        Perspective.far     =  1000.0f;
         Perspective.width   =  w;
         Perspective.height  =  h;
         Perspective.fov     =  degToRad( 70.0f );

@@ -109,9 +109,8 @@ void Scene::Exit( int64_t exitCode )
 void Scene::Render( Object& obj, size_t offset ) const
 {
     mDrawCallCounter++;
-    obj.mesh->IBO.Bind();
-    obj.mesh->VAO.Bind();
     obj.shader->Bind();
+    obj.mesh->VAO.Bind();
 
     const GPUBuffer& IBO   = obj.mesh->IBO;
     const size_t     width = IBO.size() / IBO.count(); 
@@ -131,6 +130,8 @@ void Scene::Render( Object& obj, size_t offset ) const
         indexSize, 
         (void*)offset
     );
+
+    obj.mesh->VAO.UnBind();
 }
 
 

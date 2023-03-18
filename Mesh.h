@@ -25,6 +25,8 @@ class Mesh
       public JGL::Mesh
 {
 public:
+  Mesh();
+
   static constexpr uint16_t mId = 3;
   struct FileData;
 
@@ -39,6 +41,7 @@ public:
 
   void CreateVertexBuffer( GLenum access, int num, ... ); /* Args MUST follow pattern: void* data, size_t size, size_t elem_size*/
   void CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize );
+  void CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib );
 
 private:
 
@@ -75,9 +78,9 @@ template< typename vT, size_t vSize, typename iT, size_t iSize  >
 void TigerEngine::Components::Mesh::LoadFromData( const std::array<vT,vSize>& verts, const std::array<iT,iSize>& indices, GLenum access )
 {
   constexpr auto IBOacc = GL_STATIC_DRAW;
-  JGL::Mesh::VBO.Alloc( verts.size()   * sizeof(vT), GL_ARRAY_BUFFER, access, verts.data(),vSize );
-  JGL::Mesh::IBO.Alloc( indices.size() * sizeof(iT), GL_ELEMENT_ARRAY_BUFFER, IBOacc, indices.data(),iSize);
+  VBO.Alloc( verts.size()   * sizeof(vT), GL_ARRAY_BUFFER, access, verts.data(),vSize );
+  IBO.Alloc( indices.size() * sizeof(iT), GL_ELEMENT_ARRAY_BUFFER, IBOacc, indices.data(),iSize);
 
-  JGL::Mesh::Primitive = GL_TRIANGLES;
+  Primitive = GL_TRIANGLES;
 }
 

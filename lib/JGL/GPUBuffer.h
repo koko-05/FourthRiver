@@ -32,7 +32,7 @@ public: /* OpenGL interface */
     void Alloc( size_t size, GLenum type, GLenum accessType, const void* data, size_t elemCount);
 
 public: /* Data interface */
-    void* data( ); /* gets data, OpenAccess must be called beforehand, if modified, please set count*/
+    void* data( ); /* gets data, GetAccess  must be called beforehand, if modified, please set count*/
     template<class T>
     void* dataSet( std::initializer_list<T> src );
 
@@ -45,6 +45,7 @@ public: /* getters and setters */
 
     /* should be used if element count has been modified using data() */
     void setCount( size_t v ) { mElements = v; } 
+    void setTarget( int32_t target ) { mTarget = target; }
 
 
 private:

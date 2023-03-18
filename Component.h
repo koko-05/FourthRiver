@@ -7,7 +7,6 @@
  * Provides an interface to add components 
  * to an object through inheretence
  *
- * Also provides Object class and ComponentManager
  *
  * */
 

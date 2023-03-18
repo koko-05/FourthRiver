@@ -17,23 +17,26 @@ public:
 
 
 public:
-    Kitten()
+    Kitten( size_t index = 0 )
     {
+        size_t dataSize, dataESize;
         std::vector<Mesh::FileData> fileData;
         std::vector<uint32_t>       fileIndices;
-        Mesh::LoadFromFile( "assets/cat.obj", 0, fileData, fileIndices );
-        size_t dataSize;
-        size_t dataESize;
+
+        Mesh::LoadFromFile( "assets/cat.obj", index, fileData, fileIndices );
         auto fileDataPtr = Mesh::FileData::GetDataFromVector(fileData, dataSize, dataESize);
+
+        constexpr uint32_t u32s = sizeof(uint32_t);
         Mesh::CreateVertexBuffer( GL_STATIC_DRAW, 3, fileDataPtr.get(), dataSize, dataESize );
-        Mesh::CreateIndexBuffer( GL_STATIC_DRAW, fileIndices.data(), fileIndices.size() * sizeof( uint32_t ), sizeof( uint32_t ) );
-        JGL::VertexAttribute attrib;
-                             attrib.Add( GL_FLOAT, 3 );
-                             attrib.Add( GL_FLOAT, 2 );
-        Mesh::VAO.AddAttrib( Mesh::VBO, attrib );
+        Mesh::CreateIndexBuffer( GL_STATIC_DRAW, fileIndices.data(), fileIndices.size() * u32s, u32s );
+
+        JGL::VertexAttribute attrib; 
+        Mesh::CreateAttributeFromFileData( fileData, attrib );
+        Mesh::VAO.AddAttrib( Mesh::VBO, Mesh::IBO, attrib );
     }
 
 };
+
 
 class Test1 : public JGL::Scene
 {
@@ -44,12 +47,27 @@ public:
     }
 
 public:
+    class ObjectClone
+        : public TigerEngine::Components::Transform
+    {  
+    public:
+        ObjectClone( const TigerEngine::Object& obj )
+        {
+            mesh   = obj.mesh;
+            shader = obj.shader;
+        }
+    };
+
+public:
     /* Objects */
     Kitten kitten;
+    Kitten cube{1}; /* there's a hidden cube object in the cat.obj file */
 
 public:
     void OnLoad() override
-    {  }
+    {  
+        //cube.Position = { 0, -10, 0 };
+    }
 
     void OnExit() override
     {  }
@@ -57,11 +75,14 @@ public:
     void OnUpdate() override
     {
         static float scaleVal = 0.01f;
+        kitten.Scale = { scaleVal };
 
         if ( GetContext().GetKey( GLFW_KEY_ESCAPE ) == GLFW_PRESS )
             Exit();
 
         kitten.Render( this );
+        cube.Render( this );
+
 
         // ImGui window
         {
@@ -72,7 +93,6 @@ public:
             ImGui::End();
         }
 
-        kitten.Scale = { scaleVal };
 
     }
 
@@ -124,7 +144,6 @@ void TigerEngine::OnLoad()
 
 void TigerEngine::Main()
 {
-    std::cout << "-- SCENE 1 --" << std::endl;
     TigerEngine::LoadScene<Test1>();
 }
 

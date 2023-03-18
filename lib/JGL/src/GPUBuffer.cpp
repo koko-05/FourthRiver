@@ -109,9 +109,7 @@ void GPUBuffer::ReleaseAccess()
 void GPUBuffer::Alloc( size_t size, GLenum type, GLenum accessType )
 {
     Bind( type );
-    glBufferData( 
-        type, size, nullptr, accessType 
-    );
+    glBufferData(type, size, nullptr, accessType );
 
     mSize   = size;
     mType   = accessType;
@@ -121,9 +119,7 @@ void GPUBuffer::Alloc( size_t size, GLenum type, GLenum accessType )
 void GPUBuffer::Alloc( size_t size, GLenum type, GLenum accessType, const void* data, size_t elemCount )
 {
     Bind( type );
-    glBufferData( 
-        type, size, (void*)data, accessType 
-    );
+    glBufferData(type, size, (void*)data, accessType);
 
     mSize     = size;
     mType     = accessType;

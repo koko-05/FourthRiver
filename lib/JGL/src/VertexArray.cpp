@@ -31,7 +31,6 @@ VertexArray::VertexArray()
     : mAttributes()
 { 
     glGenVertexArrays(1, &mId); 
-    glBindVertexArray(mId);
 }
 
 VertexArray::~VertexArray()
@@ -46,10 +45,9 @@ VertexArray::VertexArray( VertexArray&& _other )
     _other.mId = 0;
 }
 
-void VertexArray::AddAttrib( const GPUBuffer& vbo, const VertexAttribute& _attrib )
+void VertexArray::AddAttrib( const GPUBuffer& vbo, const GPUBuffer& ibo, const VertexAttribute& _attrib )
 {
-    ASSERT( vbo.Type() == GL_ARRAY_BUFFER, "cannot bind vao with non-vbo" );
-    vbo.Bind(); Bind();
+    Bind(); vbo.Bind(); ibo.Bind();
     unsigned int offset = 0;
     const auto& elems = _attrib.GetArr();
 
@@ -61,7 +59,10 @@ void VertexArray::AddAttrib( const GPUBuffer& vbo, const VertexAttribute& _attri
         offset += elem.count * GetGLSize( elem.type );
     }
 
-    mAttributes.emplace_back( _attrib, &vbo );
+    mAttributes.emplace_back( _attrib, &vbo, &ibo );
+    UnBind();
+    vbo.Unbind();
+    ibo.Unbind();
 }
 
 void VertexArray::Bind() const

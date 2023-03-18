@@ -62,7 +62,7 @@ public: /* Initialization and destruction */
     VertexArray& operator=( const VertexArray& ) = delete;
 
 public:
-    void AddAttrib( const GPUBuffer& vbo, const VertexAttribute& _attrib );
+    void AddAttrib( const GPUBuffer& vbo, const GPUBuffer& ibo, const VertexAttribute& _attrib );
 
 private:
     struct Attribute;
@@ -79,12 +79,15 @@ private:
 private:
     struct Attribute
     {
-        Attribute( const VertexAttribute& va, const GPUBuffer* _vbo )
+        Attribute( const VertexAttribute& va, const GPUBuffer* _vbo, const GPUBuffer* _ibo )
             : attrib( std::move( va ) ),
-              vbo( _vbo )
+              vbo( _vbo ), ibo( _ibo )
         {  }
+
         VertexAttribute  attrib;
+
         const GPUBuffer* vbo;
+        const GPUBuffer* ibo;
     };
 
     std::vector<Attribute> mAttributes;

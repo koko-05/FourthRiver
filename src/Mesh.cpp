@@ -14,6 +14,12 @@ namespace Files
   std::unordered_map<std::string, std::vector<JM::Vect2>> FileUVs;
 }
 
+Mesh::Mesh()
+{
+    JGL::Mesh::VBO.setTarget( GL_ARRAY_BUFFER );
+    JGL::Mesh::IBO.setTarget( GL_ELEMENT_ARRAY_BUFFER );
+}
+
 void Mesh::Apply( JGL::Scene* sc )
 {
     UNUSED( sc );
@@ -21,6 +27,14 @@ void Mesh::Apply( JGL::Scene* sc )
     Object::mesh = m;
 }
 
+void Mesh::CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib )
+{
+    auto& o = vect[0];
+
+    if ( o.pos )   attrib.Add( GL_FLOAT, 3 );
+    if ( o.uvs )   attrib.Add( GL_FLOAT, 2 );
+    if ( o.norms ) attrib.Add( GL_FLOAT, 3 );
+}
 
 void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileData>& vects, std::vector<uint32_t>& indices)
 {
@@ -51,9 +65,13 @@ void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileDat
         if ( first == 'o' )
         {
             if ( oCount > 0 || definesUnnamedObject || hitCount )
+            {
                 oCount++;
+                if ( oCount > index ) return;
+            }
             else
                 hitCount++;
+
         }
 
         if ( first == 'o' && oCount == index )
@@ -111,6 +129,9 @@ void Mesh::sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t
 {
     if ( !indexVertex ) return;
 
+    if ( indexVertex - 1 >= Files::FilePositions[filePath].size() )
+        std::cout << " FUCK, a PROBLEM has OCCURED!!!! COUNT: " <<  Files::FilePositions[filePath].size() << "INDEX: " << indexVertex - 1 << std::endl;
+
     if ( !indexMap.contains(indexVertex) )
     {
         auto position = indexVertex ? 
@@ -145,7 +166,7 @@ void Mesh::LoadVertexesFromFile( const char* filePath )
     char first;
     while ( !file.eof() )
     {
-        memset( lineBuffer, 0, 128 );
+        memset( lineBuffer, 0, 256 );
 
         file.getline( lineBuffer, 256 );
         std::istringstream line( lineBuffer );
@@ -231,13 +252,15 @@ void Mesh::CreateVertexBuffer( GLenum access, int num, ... )
         finalSize        += size;
     }
 
-    JGL::Mesh::VBO.Alloc( finalSize, GL_ARRAY_BUFFER, access, finalData, finalSize / finalElementSize );
-    JGL::Mesh::Primitive = GL_TRIANGLES;
+    VAO.Bind();
+    VBO.Alloc( finalSize, GL_ARRAY_BUFFER, access, finalData, finalSize / finalElementSize );
+    Primitive = GL_TRIANGLES;
 }
 
 void Mesh::CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize )
 {
-    JGL::Mesh::IBO.Alloc( size, GL_ELEMENT_ARRAY_BUFFER, access, indices, size / elemSize);
+    VAO.Bind();
+    IBO.Alloc( size, GL_ELEMENT_ARRAY_BUFFER, access, indices, size / elemSize);
 }
 
 
