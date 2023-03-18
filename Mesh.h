@@ -8,7 +8,7 @@
 #include "Component.h"
 
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {
@@ -75,7 +75,7 @@ public:
  * */
 
 template< typename vT, size_t vSize, typename iT, size_t iSize  >
-void TigerEngine::Components::Mesh::LoadFromData( const std::array<vT,vSize>& verts, const std::array<iT,iSize>& indices, GLenum access )
+void FourthRiver::Components::Mesh::LoadFromData( const std::array<vT,vSize>& verts, const std::array<iT,iSize>& indices, GLenum access )
 {
   constexpr auto IBOacc = GL_STATIC_DRAW;
   VBO.Alloc( verts.size()   * sizeof(vT), GL_ARRAY_BUFFER, access, verts.data(),vSize );

@@ -1,7 +1,7 @@
 #include "Shader.h"
 #include "JGL/Scene.h"
 
-namespace TigerEngine
+namespace FourthRiver
 {
 
 namespace Components

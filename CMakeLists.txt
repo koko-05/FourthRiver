@@ -1,5 +1,5 @@
 # Project 
-set( name TigerEngine )
+set( name FourthRiver )
 cmake_minimum_required(VERSION 3.12)
 project(${name} VERSION 1.0 LANGUAGES CXX C)
 
@@ -19,7 +19,7 @@ endif()
 add_executable(${name} 
     "examples/Kitten.cpp" 
 
-    "src/TigerEngine.cpp"
+    "src/FourthRiver.cpp"
     "src/Component.cpp"
     "src/ComponentManager.cpp"
     "src/Object.cpp"

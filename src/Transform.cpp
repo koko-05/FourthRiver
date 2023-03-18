@@ -6,7 +6,7 @@
  *
  * */
 
-namespace TigerEngine
+namespace FourthRiver
 {
 
 namespace Components

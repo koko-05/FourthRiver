@@ -1,6 +1,6 @@
 #include "Component.h"
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {

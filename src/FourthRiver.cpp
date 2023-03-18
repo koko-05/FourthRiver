@@ -1,4 +1,4 @@
-#include "TigerEngine.h"
+#include "FourthRiver.h"
 
 /*
  * A few definitions for the engine 
@@ -6,7 +6,7 @@
  * */
 
 
-namespace TigerEngine
+namespace FourthRiver
 {
 
 static JGL::glContext RENDER_CONTEXT;
@@ -14,23 +14,23 @@ std::vector< std::unique_ptr<JGL::Scene> > Instances;
 
 void Terminate(  )
 {
-    TigerEngine::Instances.clear();
+    FourthRiver::Instances.clear();
     RENDER_CONTEXT.Terminate();
-    TigerEngine::OnExit();
+    FourthRiver::OnExit();
 }
 
 void Initialize( const char* windowName, int windowWidth, int windowHeight )
 {
     RENDER_CONTEXT = JGL::glContext( windowWidth, windowHeight, windowName );
-    TigerEngine::OnLoad();
-    TigerEngine::Main();
+    FourthRiver::OnLoad();
+    FourthRiver::Main();
 }
 
 void Initialize( JGL::glContext& context )
 {
     RENDER_CONTEXT = context;
-    TigerEngine::OnLoad();
-    TigerEngine::Main();
+    FourthRiver::OnLoad();
+    FourthRiver::Main();
 }
 
 JGL::glContext& GetRenderContext()

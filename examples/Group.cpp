@@ -1,5 +1,5 @@
 #include <unistd.h> // sleep()
-#include "TigerEngine.h"
+#include "FourthRiver.h"
 #include "Object.h"
 #include "Components.h"
 
@@ -10,8 +10,8 @@
 
 /*
 class CubeGroup :
-    public TigerEngine::Components::Group<Cube>
-    public TigerEngine::Components::Transform
+    public FourthRiver::Components::Group<Cube>
+    public FourthRiver::Components::Transform
 {
     CubeGroup()
     {
@@ -23,9 +23,9 @@ class CubeGroup :
 */
 
 class Kitten : 
-    public TigerEngine::Components::Transform,
-    public TigerEngine::Components::Shader,
-    public TigerEngine::Components::Mesh
+    public FourthRiver::Components::Transform,
+    public FourthRiver::Components::Shader,
+    public FourthRiver::Components::Mesh
 {
 public:
 
@@ -89,7 +89,7 @@ class Test1 : public JGL::Scene
 {
 public:
     Test1() : 
-        Scene( TigerEngine::GetRenderContext() )
+        Scene( FourthRiver::GetRenderContext() )
     {
     }
 
@@ -172,20 +172,20 @@ public:
 };
 
 
-void TigerEngine::OnLoad()
+void FourthRiver::OnLoad()
 {
 
 }
 
 
-void TigerEngine::Main()
+void FourthRiver::Main()
 {
 
     std::cout << "-- SCENE 1 --" << std::endl;
-    TigerEngine::SceneData scene = TigerEngine::LoadScene<Test1>();
+    FourthRiver::SceneData scene = FourthRiver::LoadScene<Test1>();
 
     std::cout << "-- SCENE 2 --" << std::endl;
-    TigerEngine::LoadScene<Test1>();
+    FourthRiver::LoadScene<Test1>();
 
     if ( scene.scene ) /* Unpause scene 1 if it was paused */
     {
@@ -194,7 +194,7 @@ void TigerEngine::Main()
     }
 }
 
-void TigerEngine::OnExit() 
+void FourthRiver::OnExit() 
 {
 
 } 
@@ -202,8 +202,8 @@ void TigerEngine::OnExit()
 int main()
 {
 
-    TigerEngine::Initialize( " Test ", 500, 500 );
-    TigerEngine::Terminate();
+    FourthRiver::Initialize( " Test ", 500, 500 );
+    FourthRiver::Terminate();
     return 0;
 }
 

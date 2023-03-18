@@ -12,7 +12,7 @@
 
 namespace JGL { class Scene; }
 
-namespace TigerEngine { namespace Components {
+namespace FourthRiver { namespace Components {
 
     class Shader : public Component, public JGL::Shader
 {

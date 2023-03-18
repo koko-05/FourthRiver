@@ -11,7 +11,7 @@
 
 namespace JGL { class Scene; }
 
-namespace TigerEngine
+namespace FourthRiver
 {
 
 namespace Components { class Component; }

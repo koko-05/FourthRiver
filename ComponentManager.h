@@ -6,7 +6,7 @@
  * First Component Manager
  * */
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {
@@ -46,7 +46,7 @@ public:
 #ifndef DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS
 #include "Component.h"
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {

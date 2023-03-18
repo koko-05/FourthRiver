@@ -2,7 +2,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {

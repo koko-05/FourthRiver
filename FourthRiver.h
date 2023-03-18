@@ -16,7 +16,7 @@
  *
  * */
 
-namespace TigerEngine
+namespace FourthRiver
 {
     struct SceneData;
 
@@ -45,16 +45,16 @@ namespace TigerEngine
 }
 
 template< typename T, typename... _T >
-TigerEngine::SceneData TigerEngine::LoadScene( _T&&... args )
+FourthRiver::SceneData FourthRiver::LoadScene( _T&&... args )
 {
     /* c++ syntax for you, friend */
-    TigerEngine::Instances.emplace_back( 
+    FourthRiver::Instances.emplace_back( 
             new T( std::forward<_T>(args)... ) );
-    auto status = TigerEngine::Instances.back().get()->Start();
+    auto status = FourthRiver::Instances.back().get()->Start();
     if ( status != SCENE_PAUSE ) {
-        TigerEngine::Instances.pop_back();
+        FourthRiver::Instances.pop_back();
         return { nullptr, status };
     }
-    return { TigerEngine::Instances.back().get(), status };
+    return { FourthRiver::Instances.back().get(), status };
 }
 

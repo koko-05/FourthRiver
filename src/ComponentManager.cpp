@@ -5,7 +5,7 @@
  * Defines what is written in Object header
  * */
 
-namespace TigerEngine
+namespace FourthRiver
 {
 namespace Components
 {

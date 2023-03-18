@@ -11,14 +11,14 @@
  * */
 
 
-namespace TigerEngine
+namespace FourthRiver
 {
 
 namespace Components
 {
 
 class Component : 
-    public virtual TigerEngine::Object
+    public virtual FourthRiver::Object
 {
 public:
     Component();
