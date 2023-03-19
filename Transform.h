@@ -31,6 +31,8 @@ public:
 
 public:
     void Apply( JGL::Scene* scene ) override;
+    void Merge( Object* dest ) override;
+    void SetUniform( Object* o );
     uint16_t GetID() const override;
 
 public:

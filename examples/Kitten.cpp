@@ -4,7 +4,7 @@
 #include "Components.h"
 
 /* 
- * Loads a kitten from a file and dsiplays it
+ * Loads a kitten and a cube from a file and dsiplays it
  *
  * */
 
@@ -34,6 +34,9 @@ public:
         Mesh::CreateAttributeFromFileData( fileData, attrib );
         Mesh::VAO.AddAttrib( Mesh::VBO, Mesh::IBO, attrib );
     }
+
+public:
+    bool isVisible = true;
 
 };
 
@@ -80,9 +83,10 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_ESCAPE ) == GLFW_PRESS )
             Exit();
 
-        kitten.Render( this );
-        cube.Render( this );
+        if ( kitten.isVisible )
+            kitten.Render( this );
 
+        cube.Render( this );
 
         // ImGui window
         {

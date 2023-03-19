@@ -44,6 +44,47 @@ void Transform::Apply( JGL::Scene* scene )
     mvp_data = scene->GetCamera().Projection() *
                scene->GetCamera().View() *
                GetMatrix();
+
+    SetUniform( this );
+}
+
+void Transform::SetUniform( Object* o )
+{
+    if ( !o->shader ) return;
+
+    o->shader->Bind();
+
+    if ( o->flags & OBJECT_MVPID_CACHE_BIT )
+    {
+        o->shader->SetUniformMat4( 
+            o->cached_MVPid, 
+            o->mvp_data.Transpose()
+        );
+    }
+    else
+    {
+        o->cached_MVPid 
+            = o->shader->GetUniformLocation( uMVP );
+        o->flags |= OBJECT_MVPID_CACHE_BIT;
+    }
+
+}
+
+void Transform::Merge( Object* dest )
+{
+    auto c = dest->FindComponent<Transform>;
+    if ( !c )
+    {
+        mvp_data = scene->GetCamera().Projection() *
+                   scene->GetCamera().View() *
+                   GetMatrix();
+        SetUniform( dest );
+        return;
+    }
+
+    c->Scale    += Scale;
+    c->Position += Position;
+    c->Rotation += Rotation;
 }
 
 

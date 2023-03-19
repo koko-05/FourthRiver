@@ -27,6 +27,14 @@ void Mesh::Apply( JGL::Scene* sc )
     Object::mesh = m;
 }
 
+
+void Mesh::Merge( Object* dest )
+{
+    if ( !dest->FindComponent<Mesh>() )
+        dest->mesh = static_cast<JGL::Mesh*>(this);
+
+}
+
 void Mesh::CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib )
 {
     auto& o = vect[0];

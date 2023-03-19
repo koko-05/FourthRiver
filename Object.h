@@ -2,6 +2,7 @@
 #include "JM/JMath.h"
 #include "JGL/Scene.h"
 
+/* TODO: change this ( fix it )*/
 #define DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS
 #include "ComponentManager.h"
 #undef DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS

@@ -8,7 +8,7 @@
  * be called when the engine is created
  *
  * This is engine is thought out to have a Application.cpp file that implements
- * the the methods, and various .cpp .h files that implement Scenes that get objects
+ * the scene, and various .cpp .h files that implement Scenes that get objects
  * from other .cpp .h files. 
  *
  * This engine is mainly to manage Scene creation and deletion, while keeping the same

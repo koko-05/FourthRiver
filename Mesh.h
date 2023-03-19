@@ -39,9 +39,10 @@ public:
 
   void LoadFromFile( const char* filePath, size_t index, std::vector<FileData>& vects, std::vector<uint32_t>& indices );
 
+  void LoadSimpleFromFile( const char* filePath, size_t index );
   void CreateVertexBuffer( GLenum access, int num, ... ); /* Args MUST follow pattern: void* data, size_t size, size_t elem_size*/
   void CreateIndexBuffer( GLenum access, void* indices, size_t size, size_t elemSize );
-  void CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib );
+  static void CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib );
 
 private:
 
@@ -59,11 +60,9 @@ public:
     static uniq_ptr GetDataFromVector( std::vector<FileData>& vect, size_t& out_size, size_t& out_eSize );
   };
 
-
-private:
-
 public:
   void Apply( JGL::Scene* sc) override;
+  void Merge( Object* dest ) override;
   uint16_t GetID() const override;
 };
 
