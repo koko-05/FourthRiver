@@ -17,7 +17,7 @@ endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "examples/Kitten.cpp" 
+    "examples/GroupTest.cpp" 
 
     "src/FourthRiver.cpp"
     "src/Component.cpp"
@@ -26,6 +26,7 @@ add_executable(${name}
     "src/Shader.cpp"
     "src/Transform.cpp"
     "src/Mesh.cpp"
+    "src/ObjectGroup.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"

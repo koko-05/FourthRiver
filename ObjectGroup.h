@@ -24,29 +24,39 @@ class ObjectGroup
 {
 public:
     template<typename T>
-    class ref : std::unique_ptr<T> {};
+    class ref : public std::unique_ptr<T> {};
 
 public:
     ObjectGroup() {}
 
 public:
     void addObject( ref<Object>&& obj );
-    void addGroup( const char* gName );
+    void addGroup( ObjectGroup::ref<ObjectGroup>&& grp, const char* gName );
 
 public:
-    struct groupsIndexData { 
+    struct ObjectFileGroupData { 
         std::vector<uint32_t> indices;
-        uint32_t              gCount;
-        size_t                fileOffset;
-        char[MAX_OSIZE]       name;
+        char                  name[MAX_OSIZE] = {0};
     };
 
-    groupsIndexData GetObjectIndicesFromFile( const char* fName, uint32_t index, size_t fileOffset);
+    struct GroupFileData
+    {
+        struct data
+        { std::string filePath; uint32_t index; };
+
+        std::vector<data> objects;
+        std::vector<GroupFileData> groups;
+        char name[MAX_OSIZE];
+    };
+
+    ObjectFileGroupData GetObjectIndicesFromFile( const char* fName, uint32_t gIndex );
+    GroupFileData ParseGroupFile( const char* fName ); // TODO
     
-    template<typename ObjectClass, typename _T>
-    void LoadGroupFromFile( const char* fName, uint32_t index, size_t offset, T&&... args ); 
-    /* ObjectClass NEEDS to inheret from Mesh component. 
-     * Offset shall be 0, used internally */
+    /* ObjectClass NEEDS to inheret from Mesh component. */
+    template<typename ObjectClass, typename... _T>
+    void LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args ); 
+
+    
 
 public:
     void Render( JGL::Scene* scene ) override;
@@ -62,24 +72,15 @@ namespace FourthRiver
 {
 
 template<typename ObjectClass, typename... _T>
-void ObjectGroup::LoadGroupFromFile<ObjectClass>( const char* fName, uint32_t index, size_t offset, _T&&... args )
+void ObjectGroup::LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args )
 {
-    // TODO: implement mergeAll
-    auto r = GetObjectIndicesFromFile( fName, index, 0 );
+    auto r = GetObjectIndicesFromFile( fName, index );
     memcpy( name, r.name, strlen( r.name ) );
 
-    for ( size_t i = 0; i < r.gCount; i++ )
-    {
-        mGroups.push_back();
-        mGroups.back()->
-            LoadGroupFromFile<ObjectClass>( fName, i, mergeAll, r.fileOffset, std::forward<_T>(args)... );
-    }
-
-    mObjects.reserve( r.indices.size() );
     for ( uint32_t i : r.indices )
     {
         auto obj = std::make_unique<ObjectClass>( std::forward<_T>(args)... );
-        obj->Mesh::LoadSimpleFromFile( fPath, i );
+        obj->Mesh::LoadSimpleFromFile( fName, i );
         addObject( std::move( static_cast<ref<Object>>(obj) ) );
     }
 }

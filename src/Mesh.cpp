@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "ComponentManagerTemplates.cpp"
 #include <sstream>
 #include <fstream>
 
@@ -28,8 +29,9 @@ void Mesh::Apply( JGL::Scene* sc )
 }
 
 
-void Mesh::Merge( Object* dest )
+void Mesh::Merge( Object* dest, JGL::Scene* scene )
 {
+    UNUSED(scene);
     if ( !dest->FindComponent<Mesh>() )
         dest->mesh = static_cast<JGL::Mesh*>(this);
 
@@ -154,6 +156,24 @@ void Mesh::sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t
     }
 
     indices.push_back( indexMap[ indexVertex ] );
+}
+
+void Mesh::LoadSimpleFromFile( const char* filePath, size_t index )
+{
+    size_t dataSize, dataESize;
+    std::vector<FileData> fileData;
+    std::vector<uint32_t> fileIndices;
+
+    LoadFromFile( filePath, index, fileData, fileIndices );
+    auto fileDataPtr = FileData::GetDataFromVector(fileData, dataSize, dataESize);
+
+    constexpr uint32_t u32s = sizeof(uint32_t);
+    CreateVertexBuffer( GL_STATIC_DRAW, 3, fileDataPtr.get(), dataSize, dataESize );
+    CreateIndexBuffer( GL_STATIC_DRAW, fileIndices.data(), fileIndices.size() * u32s, u32s );
+
+    JGL::VertexAttribute attrib; 
+    CreateAttributeFromFileData( fileData, attrib );
+    VAO.AddAttrib( VBO, IBO, attrib );
 }
 
 void Mesh::LoadVertexesFromFile( const char* filePath )

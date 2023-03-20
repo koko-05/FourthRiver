@@ -31,47 +31,14 @@ public:
     cList componentList;
 
 public:
+    /* you need to include ComponentManagerTemplates.cpp in order to use these */
     template<typename C> C& GetComponent();
     template<typename C> C* FindComponent();
+
     void ForEach_Component( void(*func)(Components::Component* c) );
 };
 
 }
 }
 
-/*
- * Template definitions
- * */
 
-#ifndef DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS
-#include "Component.h"
-
-namespace FourthRiver
-{
-namespace Components
-{
-
-
-template<typename C>
-C* ComponentManager::FindComponent()
-{
-    for ( auto& it = componentList.begin();
-          it != componentList.end(); it++ )
-    {
-        if ( (*it)->GetID() == C::mId  )
-            return *it;
-    }
-
-    return nullptr;
-}
-
-template<typename C>
-C& ComponentManager::GetComponent()
-{ 
-    return *(this); // implicit cast should take care of errors
-}
-
-
-}
-}
-#endif

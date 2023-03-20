@@ -1,11 +1,7 @@
 #pragma once
 #include "JM/JMath.h"
 #include "JGL/Scene.h"
-
-/* TODO: change this ( fix it )*/
-#define DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS
 #include "ComponentManager.h"
-#undef DONT_COMPONENT_MGR_TEMPLATE_DEFINITIONS
 
 #define OBJECT_MVPID_CACHE_BIT 0x00000001
 #define MAX_OSIZE 16

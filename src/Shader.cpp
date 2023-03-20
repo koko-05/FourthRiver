@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "JGL/Scene.h"
+#include "ComponentManagerTemplates.cpp"
 
 namespace FourthRiver
 {
@@ -19,8 +20,9 @@ void Shader::Apply( JGL::Scene* scene )
     Component::Object::shader = static_cast<JGL::Shader*>(this);
 }
 
-void Shader::Merge( Object* dest )
+void Shader::Merge( Object* dest, JGL::Scene* scene )
 {
+    UNUSED( scene );
     if ( !dest->FindComponent<Shader>() )
         dest->shader = static_cast<JGL::Shader*>(this);
 }

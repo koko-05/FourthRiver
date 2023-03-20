@@ -26,7 +26,7 @@ public:
 
 public:
     virtual void Apply( JGL::Scene* sc ) = 0; /* should be called on each render */
-    virtual void Merge( Object* dest ) = 0;
+    virtual void Merge( Object* dest, JGL::Scene* scene ) = 0;
     virtual uint16_t GetID() const;
 
 public:

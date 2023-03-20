@@ -1,5 +1,6 @@
 #include "Transform.h"
 #include "JGL/Scene.h"
+#include "ComponentManagerTemplates.cpp"
 
 /* 
  * Defines what is written in the header file 
@@ -63,16 +64,15 @@ void Transform::SetUniform( Object* o )
     }
     else
     {
-        o->cached_MVPid 
-            = o->shader->GetUniformLocation( uMVP );
+        o->cached_MVPid = o->shader->GetUniformLocation( "uMVP" );
         o->flags |= OBJECT_MVPID_CACHE_BIT;
     }
 
 }
 
-void Transform::Merge( Object* dest )
+void Transform::Merge( Object* dest, JGL::Scene* scene )
 {
-    auto c = dest->FindComponent<Transform>;
+    auto c = dest->FindComponent<Transform>();
     if ( !c )
     {
         mvp_data = scene->GetCamera().Projection() *
@@ -82,9 +82,9 @@ void Transform::Merge( Object* dest )
         return;
     }
 
-    c->Scale    += Scale;
-    c->Position += Position;
-    c->Rotation += Rotation;
+    c->Scale    = c->Scale    + Scale;
+    c->Position = c->Position + Position;
+    c->Rotation = c->Rotation + Rotation;
 }
 
 
