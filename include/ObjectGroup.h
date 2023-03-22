@@ -81,8 +81,10 @@ void ObjectGroup::LoadGroupFromObjectFile( const char* fName, uint32_t index, _T
     {
         auto obj = std::make_unique<ObjectClass>( std::forward<_T>(args)... );
         obj->Mesh::LoadSimpleFromFile( fName, i );
-        addObject( std::move( static_cast<ref<Object>>(obj) ) );
-    }
+        auto ptr = static_cast<Object*>(obj.release());
+        ref<Object> mobj; mobj.reset( ptr );
+        addObject( std::move( mobj ) );
+    } // this is not how you use cpp pointers, i know
 }
 
 }

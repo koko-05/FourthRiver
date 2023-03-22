@@ -3,6 +3,8 @@
 #include "JGL/Scene.h"
 #include "ComponentManager.h"
 
+// TODO: allow adding more components through dyneamic mem alloc
+
 #define OBJECT_MVPID_CACHE_BIT 0x00000001
 #define MAX_OSIZE 16
 
@@ -19,6 +21,9 @@ class Object :
 {
 public:
     using Matrix = JM::Mat<4,4>;
+
+public:
+    virtual ~Object() {}
 
 public:
     Matrix  mvp_data       = JM::DoNothingMatrix();

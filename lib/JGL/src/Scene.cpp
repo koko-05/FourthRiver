@@ -208,6 +208,41 @@ void Scene::FixedUpdate( float dt )
     OnFixedUpdate( dt );
 }
 
+void Scene::DefaultKeyboardCameraMove( float dt, float speed, float camSpeed )
+{
+    /* Camera Controll */
+    auto& cam = GetCamera(); speed *= dt;
+    const JM::Vect3 up       = { 0.0f,   speed,  0.0f };
+    const JM::Vect3 down     = { 0.0f,   -speed, 0.0f};
+
+    if ( GetContext().GetKey( GLFW_KEY_W ) == GLFW_PRESS )
+        cam.Move( GetCamera().Direction * -speed );
+
+    if ( GetContext().GetKey( GLFW_KEY_S ) == GLFW_PRESS )
+        cam.Move( GetCamera().Direction *  speed );
+
+    if ( GetContext().GetKey( GLFW_KEY_A ) == GLFW_PRESS )
+        cam.Move( GetCamera().RightAxis * -speed );
+
+    if ( GetContext().GetKey( GLFW_KEY_D ) == GLFW_PRESS )
+        cam.Move( GetCamera().RightAxis *  speed );
+
+    if ( GetContext().GetKey( GLFW_KEY_SPACE ) == GLFW_PRESS )
+        cam.Move( up );
+
+    if ( GetContext().GetKey( GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS )
+        cam.Move( down );
+
+    if ( GetContext().GetKey( GLFW_KEY_LEFT ) == GLFW_PRESS )
+        cam.MoveDirection( speed * -camSpeed, 0.0f );
+    if ( GetContext().GetKey( GLFW_KEY_RIGHT ) == GLFW_PRESS )
+        cam.MoveDirection( speed *  camSpeed, 0.0f );
+    if ( GetContext().GetKey( GLFW_KEY_UP ) == GLFW_PRESS )
+        cam.MoveDirection( 0.0f, speed * -camSpeed );
+    if ( GetContext().GetKey( GLFW_KEY_DOWN ) == GLFW_PRESS )
+        cam.MoveDirection( 0.0f, speed * camSpeed );
+
+}
 
 }
 

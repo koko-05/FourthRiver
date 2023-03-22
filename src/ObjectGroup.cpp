@@ -41,11 +41,11 @@ void ObjectGroup::Render( JGL::Scene* scene )
 ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const char* fName, uint32_t index )
 {
     static char lineBuffer[256]= { 0 };
-    size_t currentObjectIndex = 0, currentGroupIndex = 0;
+    int64_t currentObjectIndex = 0, currentGroupIndex = -1;
     ObjectFileGroupData ret;
 
     std::ifstream file( fName );
-    if ( !file.is_open() ) return ret;
+    ASSERT( file.is_open(), "Cannot find .obj group file" );
 
     char first;
     bool definesUnnamedObject = false;

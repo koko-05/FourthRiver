@@ -33,6 +33,7 @@ void Initialize( JGL::glContext& context )
     FourthRiver::Main();
 }
 
+
 JGL::glContext& GetRenderContext()
 {
     return RENDER_CONTEXT;

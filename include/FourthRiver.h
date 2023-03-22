@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "JGL/JGL.h"
+#include "ObjectGroup.h"
 #include "JM/JMath.h"
 
 /*

@@ -105,6 +105,8 @@ public: /* Information */
     const SceneContext& GetContext() const { return mContext; }
     SceneContext& GetContext() { return mContext; }
 
+public: /* utils */
+    void DefaultKeyboardCameraMove( float dt, float speed, float camSpeed );
 
 private: /* private loops */
     void Update( );
