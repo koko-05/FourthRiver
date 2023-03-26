@@ -50,7 +50,8 @@ public:
     };
 
     ObjectFileGroupData GetObjectIndicesFromFile( const char* fName, uint32_t gIndex );
-    GroupFileData ParseGroupFile( const char* fName ); // TODO
+
+    GroupFileData ParseGroupFile( const char* fName );
     
     /* ObjectClass NEEDS to inheret from Mesh component. */
     template<typename ObjectClass, typename... _T>
@@ -59,6 +60,14 @@ public:
     template<typename T>
     T& GetObjectAs( size_t index )
     { return *dynamic_cast<T*>(mObjects[index].get()); }
+
+    template<typename T>
+    T& GetObjectByName( const char* name )
+    {
+        for ( size_t i = 0; i < mObjects.size(); i++ )
+            if ( strncmp( name, mObjects[i]->name, MAX_OSIZE ) != 0 )
+                return GetObjectAs<T>(i);
+    }
     
 
 
@@ -68,6 +77,9 @@ public:
 public:
     std::vector< ref<ObjectGroup> > mGroups;
     std::vector< ref<Object>      > mObjects;
+
+private:
+    int WhiteSpaceIgnore( std::istringstream& file );
 };
 }
 

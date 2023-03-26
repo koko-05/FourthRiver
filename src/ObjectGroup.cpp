@@ -1,4 +1,5 @@
 #include "ObjectGroup.h"
+#include <array>
 #include <fstream>
 
 
@@ -44,6 +45,92 @@ void ObjectGroup::Render( JGL::Scene* scene )
 
         scene->Render( *o );
     }
+}
+
+int ObjectGroup::WhiteSpaceIgnore( std::istringstream& file )
+{
+    char c = ' ';
+    while ( !file.eof() && isspace( c ) ) { file.get( c ); }
+    return c;
+}
+
+ObjectGroup::GroupFileData ObjectGroup::ParseGroupFile( const char* fName )
+{
+    static char lineBuffer[256]= { 0 };
+    std::array<int32_t, 32> gCount = { 0 };
+    GroupFileData ret;
+
+    std::ifstream file( fName );
+    ASSERT( file.is_open(), "Cannot find .grp file: %s\n", fName );
+
+
+    while ( !file.eof() )
+    {
+        char first = '0';
+        size_t depth = 0;
+
+        memset( lineBuffer, 0, 256 );
+        file.getline( lineBuffer, 256 );
+        std::istringstream line( lineBuffer );
+
+        line.get(first); 
+
+        while ( first == '\t' )
+        {
+            line.get(first);
+            depth++;
+        }
+
+        if ( first == 'G' )
+        {
+            GroupFileData* ptr = &ret;
+            for ( size_t i = 0; i < depth; i++ ) 
+                ptr = &ptr->groups[gCount[i] - 1 == -1 ? 0 : gCount[i] - 1];
+
+            ptr->groups.emplace_back();
+            gCount[depth]++;
+            line.getline( ptr->groups.back().name, MAX_OSIZE );
+            continue;
+        }
+
+        if ( first == 'o' )
+        {
+            char fileName[128] = {0};
+            ASSERT( line.get() == ' ', "Expected space after decleration of object (%s)", fName );
+            ASSERT( WhiteSpaceIgnore( line ) == '\"', "Expected \" char after object (%s)", fName );
+
+            line.getline( fileName, 128, '\"' );
+            size_t index; line >> index;
+
+            GroupFileData* ptr = &ret;
+            for ( size_t i = 0; i < depth; i++ ) 
+                ptr = &ptr->groups[gCount[i] - 1 == -1 ? 0 : gCount[i] - 1];
+
+            ptr->objects.emplace_back( fileName, index );
+            continue;
+        }
+
+        if ( first == 'g' )
+        {
+            char fileName[128] = {0};
+            ASSERT( line.get() == ' ', "Expected space after decleration of obj group (%s)", fName );
+            ASSERT( WhiteSpaceIgnore( line ) == '\"', "Expected \" char after obj grp (%s)", fName );
+
+            line.getline( fileName, 128, '\"' );
+            size_t index; line >> index;
+            auto objects = GetObjectIndicesFromFile( fileName, index );
+
+            GroupFileData* ptr = &ret;
+            for ( size_t i = 0; i < depth; i++ ) 
+                ptr = &ptr->groups[gCount[i] - 1 == -1 ? 0 : gCount[i] - 1];
+
+            for ( auto& i : objects.indices )
+                ptr->objects.emplace_back( fileName, i );
+        }
+        
+    }
+
+    return ret;
 }
 
 ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const char* fName, uint32_t index )

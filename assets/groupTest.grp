@@ -1,0 +1,9 @@
+o "assets/cube.obj" 0
+G Cubes
+	o "assets/groupTest.obj" 1
+	g "assets/groupTest.obj" 0
+	G SubCubes
+		g "assets/groupTest.obj" 1
+
+G Kitten
+	o "assets/cat.obj" 0
