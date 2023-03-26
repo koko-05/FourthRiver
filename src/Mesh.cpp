@@ -31,8 +31,11 @@ void Mesh::Apply( JGL::Scene* sc )
 
 void Mesh::Merge( Object* dest, JGL::Scene* scene )
 {
-    UNUSED(scene);
-    if ( !dest->FindComponent<Mesh>() )
+    auto c = dest->FindComponent<Mesh>();
+
+    if ( c )
+        c->Apply( scene );
+    else
         dest->mesh = static_cast<JGL::Mesh*>(this);
 
 }
@@ -139,9 +142,6 @@ void Mesh::sendData( std::unordered_map<uint32_t,  uint32_t>& indexMap, uint32_t
 {
     if ( !indexVertex ) return;
 
-    if ( indexVertex - 1 >= Files::FilePositions[filePath].size() )
-        std::cout << " FUCK, a PROBLEM has OCCURED!!!! COUNT: " <<  Files::FilePositions[filePath].size() << "INDEX: " << indexVertex - 1 << std::endl;
-
     if ( !indexMap.contains(indexVertex) )
     {
         auto position = indexVertex ? 
@@ -183,7 +183,7 @@ void Mesh::LoadVertexesFromFile( const char* filePath )
     std::ifstream file( filePath );
     if ( !file.is_open() )
     {
-        DEBUG_PRINT( "Cannot open asset!", "WARN", stdout );
+        DEBUG_PRINT( "Cannot open asset: %s!\n", "WARN", stdout, filePath );
         return;
     }
 

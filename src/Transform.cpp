@@ -75,16 +75,28 @@ void Transform::Merge( Object* dest, JGL::Scene* scene )
     auto c = dest->FindComponent<Transform>();
     if ( !c )
     {
-        mvp_data = scene->GetCamera().Projection() *
-                   scene->GetCamera().View() *
-                   GetMatrix();
+        dest->mvp_data = 
+            scene->GetCamera().Projection()  *
+            scene->GetCamera().View()        *
+            GetMatrix();
+
         SetUniform( dest );
         return;
     }
 
-    c->Scale    = c->Scale    + Scale;
+    auto cScale    = c->Scale;
+    auto cPosition = c->Position;
+    auto cRotation = c->Rotation;
+
+    c->Scale    = c->Scale    * Scale;
     c->Position = c->Position + Position;
     c->Rotation = c->Rotation + Rotation;
+
+    c->Apply( scene );
+
+    c->Scale    = cScale;
+    c->Position = cPosition;
+    c->Rotation = cRotation;
 }
 
 

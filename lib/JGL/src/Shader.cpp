@@ -52,21 +52,16 @@ void Shader::CreateShaderS( const char* _vertexSource, const char* _fragSource)
     }
     #endif
 
-    ASSERT( _vertexSource, "Vertex Source cannot be nullptr!" );
-    ASSERT( _fragSource, "Fragment Source cannot be nullptr!" );
-
     gl_Program = CreateShader( _vertexSource, _fragSource );
 }
 
 void Shader::CreateShaderF( const char* _filePath, const char _delim )
 {
-    ASSERT( _filePath, "Shader filepath cannot be null" );
-
     static char vertexSource[MAX_SHADER_SOURCE_SIZE + 1]   = { 0 };
     static char fragmentSource[MAX_SHADER_SOURCE_SIZE + 1] = { 0 };
 
     std::ifstream file( _filePath );
-    if ( !file.is_open() ) ASSERT( false, "Error. Shader file could not be loaded." );
+    if ( !file.is_open() ) ASSERT( false, "Shader File cannot be loaded (%s)", _filePath );
 
     file.get( vertexSource, MAX_SHADER_SOURCE_SIZE, _delim ); 
     if ( file.eof() )
@@ -148,8 +143,6 @@ GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
 
 GLint Shader::GetUniformLocation( const char* _uniformName )
 {
-    ASSERT( _uniformName, "Uniform name cannot be null!" );
-
     std::string s = _uniformName;
     auto i = mUniformsMap.find( s );
     GLint id = 0;
@@ -161,8 +154,7 @@ GLint Shader::GetUniformLocation( const char* _uniformName )
         id = glGetUniformLocation( gl_Program, _uniformName );
         if ( id == -1 )
         {
-            DEBUG_PRINT( " Could not find uniform in shader ", "[WARN]", stdout );
-            printf("%s\n", _uniformName);
+            DEBUG_PRINT( " Could not find uniform \"%s\"in shader ", "[WARN]", stdout, _uniformName);
         }
         else
             mUniformsMap[_uniformName] = id;

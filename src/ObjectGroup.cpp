@@ -21,7 +21,7 @@ void ObjectGroup::addGroup( ObjectGroup::ref<ObjectGroup>&& grp, const char* gNa
 {
     mGroups.emplace_back( std::forward<ref<ObjectGroup>&&>(grp) );
     auto& name = mGroups.back()->name;
-    memcpy( name, gName, strlen( gName ) );
+    memcpy( name, gName, MAX_OSIZE );
 }
 
 void ObjectGroup::Render( JGL::Scene* scene )
@@ -31,10 +31,18 @@ void ObjectGroup::Render( JGL::Scene* scene )
 
     for ( auto& o : mObjects )
     {
-        for ( size_t i = 0; i < ComponentManager::componentList.size; i++ )
-            ComponentManager::componentList[i]->Merge( o.get(), scene );
+        for ( auto& c : o->componentList )
+        {
+            if ( !FindComponentByID( c->GetID() ) )
+                c->Apply( scene );
+        }
 
-        o->Render( scene );
+        for ( auto& c : ComponentManager::componentList )
+        {
+            c->Merge( o.get(), scene );
+        }
+
+        scene->Render( *o );
     }
 }
 
@@ -45,7 +53,7 @@ ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const ch
     ObjectFileGroupData ret;
 
     std::ifstream file( fName );
-    ASSERT( file.is_open(), "Cannot find .obj group file" );
+    ASSERT( file.is_open(), "Cannot find .obj group file: %s\n", fName );
 
     char first;
     bool definesUnnamedObject = false;
@@ -67,7 +75,6 @@ ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const ch
             if ( currentGroupIndex == index )
             {
                 ret.indices.push_back( currentObjectIndex );
-                memcpy( ret.name, "UNNAMED", 8 );
             }
         }
 
@@ -76,7 +83,6 @@ ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const ch
             if ( currentGroupIndex == index )
             {
                 ret.indices.push_back( currentObjectIndex );
-
             }
 
             if ( !definesUnnamedObject )
@@ -86,8 +92,9 @@ ObjectGroup::ObjectFileGroupData ObjectGroup::GetObjectIndicesFromFile( const ch
         }
 
 
-        if (  first == 'g' && currentGroupIndex++ == index )
+        if (  first == 'g' && ++currentGroupIndex == index )
         {
+            memset( ret.name, 0, MAX_OSIZE );
             line.getline(ret.name, MAX_OSIZE);
         }
 

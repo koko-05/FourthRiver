@@ -121,7 +121,7 @@ void Scene::Render( Object& obj, size_t offset ) const
         case sizeof( GLuint   ): indexSize = GL_UNSIGNED_INT;   break; 
         case sizeof( GLushort ): indexSize = GL_UNSIGNED_SHORT; break; 
         case sizeof( GLubyte  ): indexSize = GL_UNSIGNED_BYTE;  break;
-        default: ASSERT( false, "IBO seems to be currupted" );  return; 
+        default: ASSERT( false, "IBO is corrupt (width is: %ld)", width );  return; 
     }
 
     glDrawElements( 

@@ -2,14 +2,14 @@
 #include "FourthRiver.h"
 #include "Object.h"
 #include "Components.h"
+#include "src/ComponentManagerTemplates.cpp"
 
 /* 
- * In the near future it shall load a gropu from a file and display it, allowing you to
- * modify the groups transform and other jazz so that you can see its usefullness
+ * Loads 2 groups from a .obj file and allows you to modify transform
  *
  * */
 
-class Cube
+class Cube 
     : public FourthRiver::Components::Transform,
       public FourthRiver::Components::Mesh,
       public FourthRiver::Components::Shader
@@ -29,44 +29,18 @@ public:
 
 public:
     /* Objects */
-    Group mCubeGroup;
+    Group mCubeGroup1;
+    Group mCubeGroup2;
 
 public:
-    void printBuf(JGL::GPUBuffer& buf, bool tf)
-    {
-        buf.GetAccess( GL_READ_ONLY );
-        for ( size_t i = 0; i < buf.count(); i += tf ? 3 : 1 )
-        {
-            std::cout << ((JM::Vect3*)buf.data())[i] << ", \n";
-            if (tf)
-            {
-                std::cout << "uv: "<< ((JM::Vect3*)buf.data())[i+1] << ", \n";
-                std::cout << "nr: "<< ((JM::Vect3*)buf.data())[i+2] << ", \n";
-
-            }
-        }
-
-        buf.ReleaseAccess();
-    }
 
     void OnLoad() override
     {  
-        mCubeGroup.LoadGroupFromObjectFile<Cube>( "assets/groupTest.obj", 0 ); 
+        mCubeGroup1.LoadGroupFromObjectFile<Cube>( "assets/groupTest.obj", 0 ); 
+        mCubeGroup2.LoadGroupFromObjectFile<Cube>( "assets/groupTest.obj", 1 ); 
 
-        mCubeGroup.Render( this );
-
-        int i = 0;
-        for ( const auto& ptr : mCubeGroup.mObjects )
-        {
-            const auto& o = *ptr;
-            const auto& mesh = o.mesh;
-
-            std::cout << "\n\n---------- "<< i++ << " ---------";
-            std::cout << "\n-VBO-\n";
-            printBuf( mesh->VBO, true );
-            std::cout << "\n-IBO-\n";
-            printBuf( mesh->IBO, false );
-        }
+        std::cout << mCubeGroup1.name << std::endl;
+        std::cout << mCubeGroup2.name << std::endl;
     }
 
     void OnExit() override
@@ -77,19 +51,30 @@ public:
         if ( GetContext().GetKey( GLFW_KEY_ESCAPE ) == GLFW_PRESS )
             Exit();
 
-        mCubeGroup.Render( this );
+        mCubeGroup1.Render( this );
+        mCubeGroup2.Render( this );
 
         // ImGui window
         {
-            float trash;
+            float scale1 = mCubeGroup1.Scale.x();
+            float scale2 = mCubeGroup2.Scale.x();
+
             ImGui::Begin("DEBUG WINDOW!");
             ImGui::Text("%.2fms (%i FPS)", GetContext().FrameTime, GetContext().FPS );
-            ImGui::SliderFloat( "scale", &trash, 0.0f, 0.1f  );
+            ImGui::SliderFloat( "G1_Scale", &scale1, 0.0f, 1.0f  );
+            ImGui::SliderFloat3( "G1_Pos", &mCubeGroup1.Position.x(), -10.0f, 10.0f  );
+
+            ImGui::SliderFloat( "G2_Scale", &scale2, 0.0f, 1.0f  );
+            ImGui::SliderFloat3( "G2_Pos", &mCubeGroup2.Position.x(), -10.0f, 10.0f  );
+
+            ImGui::SliderFloat3( "o1_Pos", &mCubeGroup1.GetObjectAs<Cube>(0).Position.x(), -10.0f, 10.0f  );
+
             ImGui::Text("%i DrawCalls", GetContext().DrawCalls );
             ImGui::End();
+
+            mCubeGroup1.Scale = { scale1 };
+            mCubeGroup2.Scale = { scale2 };
         }
-
-
     }
 
     void OnFixedUpdate( float dt ) override

@@ -11,7 +11,7 @@ GLuint GetGLSize( GLenum _type )
         case GL_UNSIGNED_BYTE: return 1;
         case GL_BYTE:          return 1;
         
-        default: UNIMPLEMENTED;
+        default: ASSERT( 0, "_type is: %d", _type );
     }
     return 0;
 }

@@ -46,7 +46,7 @@ public:
 
         std::vector<data> objects;
         std::vector<GroupFileData> groups;
-        char name[MAX_OSIZE];
+        char name[MAX_OSIZE] = {0};
     };
 
     ObjectFileGroupData GetObjectIndicesFromFile( const char* fName, uint32_t gIndex );
@@ -56,7 +56,11 @@ public:
     template<typename ObjectClass, typename... _T>
     void LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args ); 
 
+    template<typename T>
+    T& GetObjectAs( size_t index )
+    { return *dynamic_cast<T*>(mObjects[index].get()); }
     
+
 
 public:
     void Render( JGL::Scene* scene ) override;
@@ -75,7 +79,7 @@ template<typename ObjectClass, typename... _T>
 void ObjectGroup::LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args )
 {
     auto r = GetObjectIndicesFromFile( fName, index );
-    memcpy( name, r.name, strlen( r.name ) );
+    memcpy( name, r.name, MAX_OSIZE );
 
     for ( uint32_t i : r.indices )
     {

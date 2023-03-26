@@ -26,6 +26,11 @@ public:
     void Merge( Object* dest, JGL::Scene* scene ) override;
     uint16_t GetID() const override;
 
+public:
+    void SetCurrentShader( JGL::Shader* shader );
+    JGL::Shader* mCurrentShader = nullptr;
+
+
 };
 
 }

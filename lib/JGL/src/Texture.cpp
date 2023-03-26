@@ -79,7 +79,7 @@ void Texture::SetImgDataF( const char* _filePath, GLenum _target, GLenum _desire
 
     mData = stbi_load(_filePath, &width, &height, &colorChannels, 0); 
     
-    ASSERT( mData, "Failed to load image req for texture! (from stb_image)");
+    ASSERT( mData, "Failed to load image req for texture! (%s)", _filePath);
 
     SetImgData( mData,_target, _desiredFormat, _inputFormat, width, height );
 }

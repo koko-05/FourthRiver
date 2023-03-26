@@ -10,10 +10,10 @@ namespace Components
 template<typename C>
 C* ComponentManager::FindComponent()
 {
-    for ( auto it = componentList.begin(); it != componentList.end(); it++ )
+    for ( size_t i = 0; i < componentList.size; i++ )
     {
-        if ( (*it)->GetID() == C::mId  )
-            return static_cast<C*>(*it);
+        if ( componentList[i]->GetID() == C::mId  )
+            return static_cast<C*>(componentList[i]);
     }
 
     return nullptr;
@@ -22,7 +22,13 @@ C* ComponentManager::FindComponent()
 template<typename C>
 C& ComponentManager::GetComponent()
 { 
-    return *(this); // implicit cast should take care of errors
+    for ( size_t i = 0; i < componentList.size; i++ )
+    {
+        if ( componentList[i]->GetID() == C::mId  )
+            return *static_cast<C*>(componentList[i]);
+    }
+
+    ASSERT( 0, "Could not find component!" );
 }
 
 

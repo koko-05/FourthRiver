@@ -10,11 +10,17 @@ namespace FourthRiver
 {
 
 static JGL::glContext RENDER_CONTEXT;
+namespace Components
+{
+    extern JGL::Shader* GLOBAL_SHADER;
+}
+
 std::vector< std::unique_ptr<JGL::Scene> > Instances;
 
 void Terminate(  )
 {
     FourthRiver::Instances.clear();
+    delete Components::GLOBAL_SHADER;
     RENDER_CONTEXT.Terminate();
     FourthRiver::OnExit();
 }
