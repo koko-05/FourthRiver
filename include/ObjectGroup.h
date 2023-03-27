@@ -50,12 +50,21 @@ public:
     };
 
     ObjectFileGroupData GetObjectIndicesFromFile( const char* fName, uint32_t gIndex );
-
     GroupFileData ParseGroupFile( const char* fName );
-    
+    template<typename ObjectClass, typename GroupClass, typename... _T>
+    void LoadFromParsedGroupFile( GroupFileData& d, ObjectGroup& o, _T&&... args );
+
+public:
+    /* ObjectClass NEEDS to inheret from Mesh component. */
+    template<typename ObjectClass, typename GroupClass, typename... _T>
+    void LoadFromGroupFile( const char* fName, _T&&... args );
+
     /* ObjectClass NEEDS to inheret from Mesh component. */
     template<typename ObjectClass, typename... _T>
     void LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args ); 
+    
+
+public:
 
     template<typename T>
     T& GetObjectAs( size_t index )
@@ -86,6 +95,36 @@ private:
 /* template definitions */
 namespace FourthRiver
 {
+
+template<typename ObjectClass, typename GroupClass, typename... _T>
+void ObjectGroup::LoadFromGroupFile( const char* fName, _T&&... args )
+{
+    auto r = ParseGroupFile( fName );
+    memcpy( r.name, fName, MAX_OSIZE );
+    LoadFromParsedGroupFile<ObjectClass, GroupClass>( r, *this, std::forward<_T>(args)... );
+}
+
+template<typename ObjectClass, typename GroupClass, typename... _T>
+void ObjectGroup::LoadFromParsedGroupFile( ObjectGroup::GroupFileData& d, ObjectGroup& o, _T&&... args )
+{
+    memcpy( o.name, d.name, MAX_OSIZE );
+    for ( size_t i = 0; i < d.groups.size(); i++ )
+    {
+        o.mGroups.emplace_back( std::make_unique<GroupClass>() );
+        LoadFromParsedGroupFile<ObjectClass, GroupClass>
+            ( d.groups[i], *o.mGroups.back(), std::forward<_T>(args)...);
+    }
+
+    for ( auto& ob : d.objects )
+    {
+        auto obj = std::make_unique<ObjectClass>( std::forward<_T>(args)... );
+        obj->Mesh::LoadSimpleFromFile( ob.filePath.c_str(), ob.index );
+        auto ptr = static_cast<Object*>(obj.release());
+        ref<Object> mobj; mobj.reset( ptr );
+        o.addObject( std::move( mobj ) );
+    }
+
+}
 
 template<typename ObjectClass, typename... _T>
 void ObjectGroup::LoadGroupFromObjectFile( const char* fName, uint32_t index, _T&&... args )

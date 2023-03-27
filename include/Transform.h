@@ -32,13 +32,20 @@ public:
 public:
     void Apply( JGL::Scene* scene ) override;
     void Merge( Object* dest, JGL::Scene* scene ) override;
-    void SetUniform( Object* o );
+    void Unmerge( Object* dest, JGL::Scene* scene ) override;
     uint16_t GetID() const override;
+    void SetUniform( Object* o );
 
 public:
    Vect3 Scale     = { 1.0f, 1.0f, 1.0f }; 
    Vect3 Rotation  = { 0.0f, 0.0f, 0.0f }; /* in radians */
    Vect3 Position  = { 0.0f, 0.0f, 0.0f }; 
+
+private:
+   Vect3 cScale; 
+   Vect3 cRotation;
+   Vect3 cPosition; 
+
 };
 
 

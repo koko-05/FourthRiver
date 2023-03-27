@@ -34,13 +34,18 @@ void Shader::SetCurrentShader( JGL::Shader* shader )
 
 void Shader::Merge( Object* dest, JGL::Scene* scene )
 {
+    UNUSED( scene );
     auto c = dest->FindComponent<Shader>();
 
     if ( c )
         c->Apply( scene );
     else
         dest->shader = mCurrentShader;
+}
 
+void Shader::Unmerge( Object* dest, JGL::Scene* scene )
+{
+    dest->shader = nullptr;
 }
 
 uint16_t Shader::GetID() const 

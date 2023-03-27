@@ -28,7 +28,21 @@ void ObjectGroup::addGroup( ObjectGroup::ref<ObjectGroup>&& grp, const char* gNa
 void ObjectGroup::Render( JGL::Scene* scene )
 {
     for ( auto& g : mGroups )
+    {
+        for ( auto& c : g->componentList )
+        {
+            if ( !FindComponentByID( c->GetID() ) )
+                c->Apply( scene );
+        }
+
+        for ( auto& c : componentList )
+            c->Merge( g.get(), scene );
+
         g->Render( scene );
+
+        for ( auto& c : componentList )
+            c->Unmerge( g.get(), scene );
+    }
 
     for ( auto& o : mObjects )
     {
@@ -38,12 +52,13 @@ void ObjectGroup::Render( JGL::Scene* scene )
                 c->Apply( scene );
         }
 
-        for ( auto& c : ComponentManager::componentList )
-        {
+        for ( auto& c : componentList )
             c->Merge( o.get(), scene );
-        }
 
         scene->Render( *o );
+
+        for ( auto& c : componentList )
+            c->Unmerge( o.get(), scene );
     }
 }
 

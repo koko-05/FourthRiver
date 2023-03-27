@@ -37,7 +37,12 @@ void Mesh::Merge( Object* dest, JGL::Scene* scene )
         c->Apply( scene );
     else
         dest->mesh = static_cast<JGL::Mesh*>(this);
+}
 
+void Mesh::Unmerge( Object* dest, JGL::Scene* scene )
+{
+    UNUSED( scene );
+    dest->mesh = nullptr;
 }
 
 void Mesh::CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::VertexAttribute& attrib )

@@ -63,6 +63,7 @@ public:
 public:
   void Apply( JGL::Scene* sc) override;
   void Merge( Object* dest, JGL::Scene* scene ) override;
+  void Unmerge( Object* dest, JGL::Scene* scene ) override;
   uint16_t GetID() const override;
 };
 

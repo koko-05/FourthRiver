@@ -84,19 +84,29 @@ void Transform::Merge( Object* dest, JGL::Scene* scene )
         return;
     }
 
-    auto cScale    = c->Scale;
-    auto cPosition = c->Position;
-    auto cRotation = c->Rotation;
+    c->cScale    = c->Scale;
+    c->cPosition = c->Position;
+    c->cRotation = c->Rotation;
 
     c->Scale    = c->Scale    * Scale;
     c->Position = c->Position + Position;
     c->Rotation = c->Rotation + Rotation;
 
     c->Apply( scene );
+}
 
-    c->Scale    = cScale;
-    c->Position = cPosition;
-    c->Rotation = cRotation;
+void Transform::Unmerge( Object* dest, JGL::Scene* scene )
+{
+    auto c = dest->FindComponent<Transform>();
+    if ( !c )
+    {
+        dest->mvp_data = JM::DoNothingMatrix();
+        return;
+    }
+
+    c->Scale    = c->cScale;
+    c->Position = c->cPosition;
+    c->Rotation = c->cRotation;
 }
 
 
