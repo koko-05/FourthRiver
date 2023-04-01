@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef _DEBUG
 #define JMDEBUG
 #endif
@@ -16,8 +15,28 @@ namespace JM
 
 using real = float;
 
-constexpr Vector<3> Euler2Dir( float pitch, float yaw );
-constexpr Matrix<4,4> DoNothingMatrix();
+class Vect2;
+class Vect3;
+class Vect4;
+
+struct ProjectionData
+{
+  int64_t f, n, l, r, t, b;
+};
+
+struct ProjectionMatrix
+{
+  bool           isPerspective;
+  ProjectionData data;
+  Matrix<4,4>    matrix;
+};
+
+constexpr Vector<3> euler2dir( float pitch, float yaw );
+constexpr Matrix<4,4> DoNothingMatrix()
+constexpr ProjectionMatrix Projection_Perspective( ProjectionData d );
+constexpr ProjectionMatrix Projection_Orthographic( ProjectionData d );
+constexpr Cross( const Vect3& a, const Vect3& b );
+
 constexpr float deg2rad( float degs );
 
 template< size_t D, typename T = real>
@@ -27,8 +46,11 @@ public:
   using M_type = Vector<D,T>;
 
 public:
-  template<T... N> Vector( N... vals );
-  template<T... N> constexpr Vector( N... vals );
+  template<typename... N> constexpr Vector( N... vals );
+  constexpr Vector( T* vals );
+  constexpr Vector( Vect2 v );
+  constexpr Vector( Vect3 v );
+  constexpr Vector( Vect4 v );
 
 public:
 #define TEMPLATE_V template<int od> Vector<D>
@@ -49,6 +71,90 @@ public:
 public:
   T values[D];
 };
+
+class Vect2
+{
+public:
+  constexpr Vect2( real x );
+  constexpr Vect2( real x, real y );
+  constexpr Vect2( Vector<2> v );
+
+public:
+  OPERATION( Vect2, +, Add,           const Vect2& v );
+  OPERATION( Vect2, -, Sub,           const Vect2& v );
+  OPERATION( Vect2, *, Multiply,      const Vect2& v );
+  OPERATION( Vect2, /, Divide,        const Vect2& v );
+
+  OPERATION( Vect2, +=, PlusEquals,   const Vect2& v );
+  OPERATION( Vect2, -=, MinusEquals,  const Vect2& v );
+  OPERATION( Vect2, *=, MultEquals,   const Vect2& v );
+  OPERATION( Vect2, /=, DivideEquals, const Vect2& v );
+
+public:
+  union
+  {
+    real x, y;
+    real u, v;
+  };
+};
+
+class Vect3
+{
+public:
+  constexpr Vect3( real x );
+  constexpr Vect3( real x, real y );
+  constexpr Vect3( real x, real y, real z );
+  constexpr Vect3( Vector<4> v );
+
+public:
+  OPERATION( Vect3, +, Add,           const Vect3& v );
+  OPERATION( Vect3, -, Sub,           const Vect3& v );
+  OPERATION( Vect3, *, Multiply,      const Vect3& v );
+  OPERATION( Vect3, /, Divide,        const Vect3& v );
+
+  OPERATION( Vect3, +=, PlusEquals,   const Vect3& v );
+  OPERATION( Vect3, -=, MinusEquals,  const Vect3& v );
+  OPERATION( Vect3, *=, MultEquals,   const Vect3& v );
+  OPERATION( Vect3, /=, DivideEquals, const Vect3& v );
+
+public:
+  union
+  {
+    real x, y, z;
+    real r, g, b;
+    real u, v, w;
+  };
+};
+
+class Vect4
+{
+public:
+  constexpr Vect4( real x );
+  constexpr Vect4( real x, real y );
+  constexpr Vect4( real x, real y, real z );
+  constexpr Vect4( real x, real y, real z, real w );
+  constexpr Vect4( Vector<4> v )
+
+public:
+  OPERATION( Vect4, +, Add,           const Vect4& v );
+  OPERATION( Vect4, -, Sub,           const Vect4& v );
+  OPERATION( Vect4, *, Multiply,      const Vect4& v );
+  OPERATION( Vect4, /, Divide,        const Vect4& v );
+
+  OPERATION( Vect4, +=, PlusEquals,   const Vect4& v );
+  OPERATION( Vect4, -=, MinusEquals,  const Vect4& v );
+  OPERATION( Vect4, *=, MultEquals,   const Vect4& v );
+  OPERATION( Vect4, /=, DivideEquals, const Vect4& v );
+
+public:
+  union
+  {
+    real x, y, z, w;
+    real r, g, b, a;
+  };
+
+};
+
 
 template < size_t sx, size_t sy, typename T = real>
 class Matrix
@@ -74,7 +180,6 @@ public:
 #define M_TEMPLATE template<size_t ox, size_t oy, typename ot> constexpr M_type 
 #define M_TYPE Matrix<ox,oy,ot>
 
-
   OPERATION( V_TEMPLATE,       *, Multiply, const Vector<v>& v );
   OPERATION( M_TEMPLATE,       *, Multiply, const M_TYPE& m );
   OPERATION( constexpr M_type, *, Multiply,       T scaler );
@@ -88,6 +193,11 @@ public:
 
 public:
   T values[sy][sx];
+
 };
 
 }
+
+/* in another file for some sense of order */
+#include "JMathTemplateDefinitions.cpp"
+
