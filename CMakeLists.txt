@@ -35,7 +35,7 @@ add_executable(${name}
     "lib/imgui/backends/imgui_impl_glfw.cpp"
     "lib/imgui/backends/imgui_impl_opengl3.cpp"
 
-    "lib/JM/src/JMath.cpp"
+    "lib/JM/JMath.cpp"
     "lib/JGL/deps/stb_image.cpp" 
     "lib/JGL/src/common.cpp" "lib/JGL/src/GPUBuffer.cpp" 
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 

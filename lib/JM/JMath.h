@@ -8,42 +8,42 @@
 #define CLAMP( val, min, max ) ( val > max ? max : ( val < min ? min : val ) )
 #define OPERATION( prefix, op, name, ... ) \
   prefix name ( __VA_ARGS__  ) const; \
-  prefix operator op ( __VA_ARGS__ ) const;
+  prefix operator op ( __VA_ARGS__ ) const
+#define _OPERATION( prefix, op, name, ... ) \
+  prefix name ( __VA_ARGS__  ); \
+  prefix operator op ( __VA_ARGS__ )
 
 namespace JM
 {
 
 using real = float;
 
+template<size_t sx, size_t sy, typename T = real>
+class Matrix;
+template<size_t d, typename T = real>
+class Vector;
 class Vect2;
 class Vect3;
 class Vect4;
 
-struct ProjectionData
-{
-  int64_t f, n, l, r, t, b;
-};
+struct ProjectionData;
+struct ProjectionMatrix;
 
-struct ProjectionMatrix
-{
-  bool           isPerspective;
-  ProjectionData data;
-  Matrix<4,4>    matrix;
-};
 
 constexpr Vector<3> euler2dir( float pitch, float yaw );
-constexpr Matrix<4,4> DoNothingMatrix()
+constexpr Matrix<4,4> DoNothingMatrix();
 constexpr ProjectionMatrix Projection_Perspective( ProjectionData d );
 constexpr ProjectionMatrix Projection_Orthographic( ProjectionData d );
-constexpr Cross( const Vect3& a, const Vect3& b );
+constexpr real Cross( const Vect3& a, const Vect3& b );
 
 constexpr float deg2rad( float degs );
 
-template< size_t D, typename T = real>
+template< size_t D, typename T >
 class Vector
 {
 public:
   using M_type = Vector<D,T>;
+  static constexpr size_t Dim = D;
 
 public:
   template<typename... N> constexpr Vector( N... vals );
@@ -53,8 +53,12 @@ public:
   constexpr Vector( Vect4 v );
 
 public:
-#define TEMPLATE_V template<int od> Vector<D>
-#define OTH_VECT
+  T& operator[]( size_t a );
+  T  operator[]( size_t a ) const;
+
+public:
+#define TEMPLATE_V template<size_t oD> Vector<D, T>
+#define OTH_VECT Vector<oD,T>
   OPERATION( TEMPLATE_V, +, Add, const OTH_VECT& ov );
   OPERATION( TEMPLATE_V, -, Sub, const OTH_VECT& ov );
   OPERATION( TEMPLATE_V, *, Multiply, const OTH_VECT& ov );
@@ -65,8 +69,6 @@ public:
 public:
   M_type Normalized() const;
   T      Magnitude() const;
-  M_type Rotate( const float deg, M_type pivot ) const;
-  
 
 public:
   T values[D];
@@ -85,10 +87,10 @@ public:
   OPERATION( Vect2, *, Multiply,      const Vect2& v );
   OPERATION( Vect2, /, Divide,        const Vect2& v );
 
-  OPERATION( Vect2, +=, PlusEquals,   const Vect2& v );
-  OPERATION( Vect2, -=, MinusEquals,  const Vect2& v );
-  OPERATION( Vect2, *=, MultEquals,   const Vect2& v );
-  OPERATION( Vect2, /=, DivideEquals, const Vect2& v );
+  _OPERATION( Vect2, +=, PlusEquals,   const Vect2& v );
+  _OPERATION( Vect2, -=, MinusEquals,  const Vect2& v );
+  _OPERATION( Vect2, *=, MultEquals,   const Vect2& v );
+  _OPERATION( Vect2, /=, DivideEquals, const Vect2& v );
 
 public:
   union
@@ -104,7 +106,7 @@ public:
   constexpr Vect3( real x );
   constexpr Vect3( real x, real y );
   constexpr Vect3( real x, real y, real z );
-  constexpr Vect3( Vector<4> v );
+  constexpr Vect3( Vector<3> v );
 
 public:
   OPERATION( Vect3, +, Add,           const Vect3& v );
@@ -133,7 +135,7 @@ public:
   constexpr Vect4( real x, real y );
   constexpr Vect4( real x, real y, real z );
   constexpr Vect4( real x, real y, real z, real w );
-  constexpr Vect4( Vector<4> v )
+  constexpr Vect4( Vector<4> v );
 
 public:
   OPERATION( Vect4, +, Add,           const Vect4& v );
@@ -156,7 +158,7 @@ public:
 };
 
 
-template < size_t sx, size_t sy, typename T = real>
+template < size_t sx, size_t sy, typename T >
 class Matrix
 {
 public:
@@ -165,26 +167,28 @@ public:
   using M_type = Matrix<sx, sy, T>;
 
 public:
-  template<T... N> Matrix( N... data );
-  template<T... N> constexpr Matrix( N... data );
+  template<typename... N> constexpr Matrix( N... data );
 
 public:
   T& Get( size_t x, size_t y );
   T  Get( size_t x, size_t y ) const;
 
 public:
+  T* operator[]( size_t y );
+
+public:
   M_type Transpose() const;
 
 public:
-#define V_TEMPLATE template<size_t v> constexpr Vector<v> 
-#define M_TEMPLATE template<size_t ox, size_t oy, typename ot> constexpr M_type 
+#define V_TEMPLATE template<size_t v> Vector<v> 
+#define M_TEMPLATE template<size_t ox, size_t oy, typename ot> Matrix<ox,sy,T> 
 #define M_TYPE Matrix<ox,oy,ot>
 
-  OPERATION( V_TEMPLATE,       *, Multiply, const Vector<v>& v );
-  OPERATION( M_TEMPLATE,       *, Multiply, const M_TYPE& m );
-  OPERATION( constexpr M_type, *, Multiply,       T scaler );
-  OPERATION( constexpr M_type, +, Add,      const M_type& m );
-  OPERATION( constexpr M_type, -, Sub,      const M_type& m );
+  OPERATION( V_TEMPLATE, *, Multiply, const Vector<v>& vect );
+  OPERATION( M_TEMPLATE, *, Multiply, const M_TYPE& m );
+  OPERATION( M_type, *, Multiply, T scaler );
+  OPERATION( M_type, +, Add, const M_type& m );
+  OPERATION( M_type, -, Sub, const M_type& m );
 
 #undef V_TEMPLATE
 #undef M_TEMPLATE
@@ -194,6 +198,18 @@ public:
 public:
   T values[sy][sx];
 
+};
+
+struct ProjectionData
+{
+  int64_t f, n, l, r, t, b;
+};
+
+struct ProjectionMatrix
+{
+  bool           isPerspective;
+  ProjectionData data;
+  Matrix<4,4>    matrix;
 };
 
 }
