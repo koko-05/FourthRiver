@@ -20,7 +20,7 @@ class Object :
     public virtual Components::ComponentManager
 {
 public:
-    using Matrix = JM::Mat<4,4>;
+    using Matrix = JM::Matrix<4,4>;
 
 public:
     virtual ~Object() {}

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 #ifdef _DEBUG
 #define JMDEBUG
@@ -30,13 +31,14 @@ struct ProjectionData;
 struct ProjectionMatrix;
 
 
-constexpr Vector<3> euler2dir( float pitch, float yaw );
-constexpr Matrix<4,4> DoNothingMatrix();
-constexpr ProjectionMatrix Projection_Perspective( ProjectionData d );
-constexpr ProjectionMatrix Projection_Orthographic( ProjectionData d );
-constexpr real Cross( const Vect3& a, const Vect3& b );
+Vector<3> euler2dir( float pitch, float yaw );
+Matrix<4,4> DoNothingMatrix();
+ProjectionMatrix Projection( ProjectionData d );
+ProjectionMatrix Projection_Perspective( ProjectionData d );
+ProjectionMatrix Projection_Orthographic( ProjectionData d );
+Vect3 Cross( const Vect3& a, const Vect3& b );
 
-constexpr float deg2rad( float degs );
+float deg2rad( float degs );
 
 template< size_t D, typename T >
 class Vector
@@ -53,8 +55,8 @@ public:
   constexpr Vector( Vect4 v );
 
 public:
-  T& operator[]( size_t a );
-  T  operator[]( size_t a ) const;
+  constexpr T& operator[]( size_t a );
+  constexpr T  operator[]( size_t a ) const;
 
 public:
 #define TEMPLATE_V template<size_t oD> Vector<D, T>
@@ -77,9 +79,13 @@ public:
 class Vect2
 {
 public:
-  constexpr Vect2( real x );
-  constexpr Vect2( real x, real y );
-  constexpr Vect2( Vector<2> v );
+  constexpr Vect2() {}
+  constexpr Vect2( real _x )
+  : x( _x ), y( _x ) {}
+  constexpr Vect2( real _x, real _y )
+  : x( _x ), y( _y ) {}
+  constexpr Vect2( Vector<2> v )
+  : x( v[0] ), y( v[1] ) {}
 
 public:
   OPERATION( Vect2, +, Add,           const Vect2& v );
@@ -87,26 +93,35 @@ public:
   OPERATION( Vect2, *, Multiply,      const Vect2& v );
   OPERATION( Vect2, /, Divide,        const Vect2& v );
 
-  _OPERATION( Vect2, +=, PlusEquals,   const Vect2& v );
-  _OPERATION( Vect2, -=, MinusEquals,  const Vect2& v );
-  _OPERATION( Vect2, *=, MultEquals,   const Vect2& v );
-  _OPERATION( Vect2, /=, DivideEquals, const Vect2& v );
+  _OPERATION( Vect2&, +=, PlusEquals,   const Vect2& v );
+  _OPERATION( Vect2&, -=, MinusEquals,  const Vect2& v );
+  _OPERATION( Vect2&, *=, MultEquals,   const Vect2& v );
+  _OPERATION( Vect2&, /=, DivideEquals, const Vect2& v );
+
+public:
+  Vect2 Normalized() const;
+  real  Magnitude() const;
 
 public:
   union
   {
-    real x, y;
-    real u, v;
+    struct { real x, y; };
+    struct { real u, v; };
   };
 };
 
 class Vect3
 {
 public:
-  constexpr Vect3( real x );
-  constexpr Vect3( real x, real y );
-  constexpr Vect3( real x, real y, real z );
-  constexpr Vect3( Vector<3> v );
+  constexpr Vect3() {}
+  constexpr Vect3( real _x )
+  : x( _x ), y( _x ), z( _x ) {}
+  constexpr Vect3( real _x, real _y )
+  : x( _x ), y( _y ), z( _x ) {}
+  constexpr Vect3( real _x, real _y, real _z )
+  : x( _x ), y( _y ), z( _z ) {}
+  constexpr Vect3( Vector<3> v )
+  : x( v[0] ), y( v[1] ), z( v[2] ) {}
 
 public:
   OPERATION( Vect3, +, Add,           const Vect3& v );
@@ -114,28 +129,39 @@ public:
   OPERATION( Vect3, *, Multiply,      const Vect3& v );
   OPERATION( Vect3, /, Divide,        const Vect3& v );
 
-  OPERATION( Vect3, +=, PlusEquals,   const Vect3& v );
-  OPERATION( Vect3, -=, MinusEquals,  const Vect3& v );
-  OPERATION( Vect3, *=, MultEquals,   const Vect3& v );
-  OPERATION( Vect3, /=, DivideEquals, const Vect3& v );
+  _OPERATION( Vect3&, +=, PlusEquals,   const Vect3& v );
+  _OPERATION( Vect3&, -=, MinusEquals,  const Vect3& v );
+  _OPERATION( Vect3&, *=, MultEquals,   const Vect3& v );
+  _OPERATION( Vect3&, /=, DivideEquals, const Vect3& v );
+
+public:
+  Vect3 Normalized() const;
+  real  Magnitude() const;
 
 public:
   union
   {
-    real x, y, z;
-    real r, g, b;
-    real u, v, w;
+    struct { real x, y, z; };
+    struct { real r, g, b; };
+    struct { real u, v, w; };
   };
 };
 
 class Vect4
 {
 public:
-  constexpr Vect4( real x );
-  constexpr Vect4( real x, real y );
-  constexpr Vect4( real x, real y, real z );
-  constexpr Vect4( real x, real y, real z, real w );
-  constexpr Vect4( Vector<4> v );
+  constexpr Vect4() {}
+  constexpr Vect4( real _x )
+  : x( _x ), y( _x ), z( _x ), w( _x ) {}
+  constexpr Vect4( real _x, real _y )
+  : x( _x ), y( _y ), z( _x ), w( _y ) {}
+  constexpr Vect4( real _x, real _y, real _z )
+  : x( _x ), y( _y ), z( _z ), w( _x ) {}
+  constexpr Vect4( real _x, real _y, real _z, real _w )
+  : x( _x ), y( _y ), z( _z ), w( _w ) {}
+  constexpr Vect4( Vector<4> v )
+  : x( v[0] ), y( v[1] ), z( v[2] ), w( v[3] ) {}
+
 
 public:
   OPERATION( Vect4, +, Add,           const Vect4& v );
@@ -143,16 +169,20 @@ public:
   OPERATION( Vect4, *, Multiply,      const Vect4& v );
   OPERATION( Vect4, /, Divide,        const Vect4& v );
 
-  OPERATION( Vect4, +=, PlusEquals,   const Vect4& v );
-  OPERATION( Vect4, -=, MinusEquals,  const Vect4& v );
-  OPERATION( Vect4, *=, MultEquals,   const Vect4& v );
-  OPERATION( Vect4, /=, DivideEquals, const Vect4& v );
+  _OPERATION( Vect4&, +=, PlusEquals,   const Vect4& v );
+  _OPERATION( Vect4&, -=, MinusEquals,  const Vect4& v );
+  _OPERATION( Vect4&, *=, MultEquals,   const Vect4& v );
+  _OPERATION( Vect4&, /=, DivideEquals, const Vect4& v );
+
+public:
+  Vect4 Normalized() const;
+  real  Magnitude() const;
 
 public:
   union
   {
-    real x, y, z, w;
-    real r, g, b, a;
+    struct { real x, y, z, w; };
+    struct { real r, g, b, a; };
   };
 
 };
@@ -202,12 +232,12 @@ public:
 
 struct ProjectionData
 {
-  int64_t f, n, l, r, t, b;
+  bool isPerspective;
+  float f, n, l, r, t, b;
 };
 
 struct ProjectionMatrix
 {
-  bool           isPerspective;
   ProjectionData data;
   Matrix<4,4>    matrix;
 };

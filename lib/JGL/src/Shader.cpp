@@ -105,7 +105,7 @@ GLuint Shader::CompileShader( GLenum _type, const char* _src )
         char* message = (char*)alloca( sizeof (char) * length );
         glGetShaderInfoLog( id, length * sizeof(char), &length, message);
 
-        std::cout << "Error to compile shader: " << std::endl;
+        std::cout << "Error compiling shader: " << std::endl;
         std::cout << message << std::endl;
     }
 
@@ -166,13 +166,13 @@ GLint Shader::GetUniformLocation( const char* _uniformName )
 GLint Shader::SetUniform4f( const char* _uniformName, const JM::Vect4& _vals )
 {
     GLint id = GetUniformLocation( _uniformName );
-    glUniform4f( id, _vals.x(), _vals.y(), _vals.z(), _vals.w() );
+    glUniform4f( id, _vals.x, _vals.y, _vals.z, _vals.w );
     return id;
 }
 
 GLint Shader::SetUniform4f( GLint _uniformId, const JM::Vect4& _vals)
 {
-    glUniform4f( _uniformId, _vals.x(), _vals.y(), _vals.z(), _vals.w() );
+    glUniform4f( _uniformId, _vals.x, _vals.y, _vals.z, _vals.w );
     return _uniformId;
 }
 
@@ -190,16 +190,16 @@ GLint Shader::SetUniform1i( GLint _uniformId,  int _v )
 
 }
 
-GLint Shader::SetUniformMat4( const char* _uniformName, const JM::Mat<4,4>& _vals )
+GLint Shader::SetUniformMat4( const char* _uniformName, const JM::Matrix<4,4>& _vals )
 {
     GLint id = GetUniformLocation( _uniformName );
-    glUniformMatrix4fv( id, 1, GL_FALSE, &_vals.mVals[0][0] );
+    glUniformMatrix4fv( id, 1, GL_FALSE, &_vals.values[0][0] );
     return id;
 }
 
-GLint Shader::SetUniformMat4( GLint _uniformId, const JM::Mat<4,4>& _vals)
+GLint Shader::SetUniformMat4( GLint _uniformId, const JM::Matrix<4,4>& _vals)
 {
-    glUniformMatrix4fv( _uniformId, 1, GL_FALSE, &_vals.mVals[0][0] );
+    glUniformMatrix4fv( _uniformId, 1, GL_FALSE, &_vals.values[0][0] );
     return _uniformId;
 }
 

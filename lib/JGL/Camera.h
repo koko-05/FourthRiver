@@ -11,11 +11,11 @@ namespace JGL
 class Camera
 {
 public:
-    using Matrix = JM::Mat<4,4>;
+    using Matrix = JM::Matrix<4,4>;
     using Vect3  = JM::Vect3;
 
 public:
-    Camera( JM::ProjectionType proj, int w, int h );
+    Camera( JM::ProjectionData projection );
     ~Camera() = default;
 
 public:
@@ -33,9 +33,8 @@ private:
     void calculateView();
 
 public:
-    Matrix mProjection;
     Matrix mView;
-    JM::ProjectionType mProjType;
+    JM::ProjectionMatrix mProjection;
 
 public: /* these shouldnt be modified directly. Be careful */
     float  mYaw = 0.0f, mPitch = 0.0f;

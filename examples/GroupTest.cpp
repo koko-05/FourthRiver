@@ -85,11 +85,11 @@ public:
 
             if ( SelectedTransform )
             {
-                float scale = SelectedTransform->Scale.x();
+                float scale = SelectedTransform->Scale.x;
 
                 ImGui::SliderFloat ( "Scale: ", &scale, 0.0f, 1.0f );
-                ImGui::SliderFloat3( "Pos:   ", &SelectedTransform->Position.x(), -10.0f, 10.0f );
-                ImGui::SliderFloat3( "Rot:   ", &SelectedTransform->Rotation.x(), -1.0f, 1.0f );
+                ImGui::SliderFloat3( "Pos:   ", &SelectedTransform->Position.x, -10.0f, 10.0f );
+                ImGui::SliderFloat3( "Rot:   ", &SelectedTransform->Rotation.x, -1.0f, 1.0f );
 
                 SelectedTransform->Scale = { scale };
             }

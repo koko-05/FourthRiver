@@ -47,7 +47,7 @@ ProjectionMatrix Projection_Perspective( ProjectionData d )
 
 ProjectionMatrix Projection( ProjectionData d )
 {
-  if ( d.isPerspective )
+  if ( d.isPerspecive )
     return Projection_Perspective( d );
   else
     return Projection_Orthographic( d );
@@ -62,8 +62,8 @@ ProjectionMatrix Projection_Orthographic( ProjectionData d )
 
   float rl = d.r - d.l, tb = d.t - d.b, fn = d.f - d.n;
 
-  ret.matrix = JM::Matrix<4,4>{
-    2.0f / rl, 0.0f,      0.0f,      -( d.r + d.l ) / rl, 
+  ret.matrix = {
+    2.0f / rl, 0.0f,      0.0f,      -( d.r + r.l ) / rl, 
     0.0f,      2.0f / tb, 0.0f,      -( d.t + d.b ) / tb,
     0.0f,      0.0f,     -2.0f / fn, -( d.f + d.n ) / fn,
     0.0f,      0.0f,      0.0f,       1.0f
@@ -72,12 +72,12 @@ ProjectionMatrix Projection_Orthographic( ProjectionData d )
   return ret;
 }
 
-Vect3 Cross( const Vect3& a, const Vect3& b )
+constexpr Vect3 Cross( const Vect3& a, const Vect3& b )
 {
     return {
-      ( ( a.y * b.z ) - ( a.z * b.y ) ),
-      ( ( a.z * b.x ) - ( a.x * b.z ) ),
-      ( ( a.x * b.y ) - ( a.y * b.x ) )
+      ( ( a.y * _b.z ) - ( _a.z * _b.y ) ),
+      ( ( a.z * _b.x ) - ( _a.x * _b.z ) ),
+      ( ( a.x * _b.y ) - ( _a.y * _b.x ) )
     };
 }
 
@@ -89,7 +89,7 @@ Vect2 Vect2::Normalized() const
 
 real Vect2::Magnitude() const
 {
-  return std::sqrt( x*x + y*y );
+  return std::sqrt( x*x, y*y );
 }
 
 Vect2 Vect2::Add( const Vect2& v ) const
@@ -184,7 +184,7 @@ Vect3 Vect3::Normalized() const
 
 real Vect3::Magnitude() const
 {
-  return std::sqrt( x*x + y*y + z*z );
+  return std::sqrt( x*x, y*y, z*z );
 }
 
 Vect3 Vect3::Add( const Vect3& v ) const
@@ -279,7 +279,7 @@ Vect4 Vect4::Normalized() const
 
 real Vect4::Magnitude() const
 {
-  return std::sqrt( x*x + y*y + z*z + w*w );
+  return std::sqrt( x*x, y*y, z*z, w*w );
 }
 
 Vect4 Vect4::Add( const Vect4& v ) const

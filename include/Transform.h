@@ -12,7 +12,7 @@ namespace Components
 class Transform : public Component
 {
 public:
-    using Matrix = JM::Mat<4,4>;
+    using Matrix = JM::Matrix<4,4>;
     using Vect3  = JM::Vect3;
 
     static constexpr uint16_t mId = 1;

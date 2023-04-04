@@ -214,21 +214,21 @@ void Mesh::LoadVertexesFromFile( const char* filePath )
         if ( second == 't' )
         {
             JM::Vect2 uv;
-            line >> uv.x() >> uv.y();
+            line >> uv.x >> uv.y;
             uvs.push_back( uv );
         }
 
         if ( second == 'n' )
         {
             JM::Vect3 norm;
-            line >> norm.x() >> norm.y() >> norm.z();
+            line >> norm.x >> norm.y >> norm.z;
             norms.push_back( norm );
         }
 
         if ( second == ' ' )
         {
             JM::Vect3 pos;
-            line >> pos.x() >> pos.y() >> pos.z();
+            line >> pos.x >> pos.y >> pos.z;
             verts.push_back( pos );
         }
 

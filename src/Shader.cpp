@@ -45,6 +45,7 @@ void Shader::Merge( Object* dest, JGL::Scene* scene )
 
 void Shader::Unmerge( Object* dest, JGL::Scene* scene )
 {
+    UNUSED( scene );
     dest->shader = nullptr;
 }
 

@@ -45,8 +45,8 @@ public: /* Uniform interface */
     GLint SetUniform1i( const char* _uniformName, int _v );
     GLint SetUniform1i( GLint _uniformId,  int _v );
 
-    GLint SetUniformMat4( const char* _uniformName, const JM::Mat<4,4>& _vals );
-    GLint SetUniformMat4( GLint _uniformId, const JM::Mat<4,4>& _vals );
+    GLint SetUniformMat4( const char* _uniformName, const JM::Matrix<4,4>& _vals );
+    GLint SetUniformMat4( GLint _uniformId, const JM::Matrix<4,4>& _vals );
 
 public: /* program index */
     GLuint gl_Program = 0;

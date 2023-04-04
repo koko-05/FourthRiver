@@ -16,16 +16,16 @@ namespace Components
 /* Transforms */
 void Transform::Move( Vect3 amount )
 {
-    Position.x() += amount.x();
-    Position.z() += amount.z();
-    Position.y() += amount.y();
+    Position.x += amount.x;
+    Position.z += amount.z;
+    Position.y += amount.y;
 }
 
 void Transform::Rotate( Vect3 degrees )
 {
-    Position.x() += JM::degToRad( degrees.x() );
-    Position.z() += JM::degToRad( degrees.z() );
-    Position.y() += JM::degToRad( degrees.y() );
+    Position.x += JM::deg2rad( degrees.x );
+    Position.z += JM::deg2rad( degrees.z );
+    Position.y += JM::deg2rad( degrees.y );
 }
 
 Transform::Matrix Transform::GetMatrix() const
@@ -97,6 +97,8 @@ void Transform::Merge( Object* dest, JGL::Scene* scene )
 
 void Transform::Unmerge( Object* dest, JGL::Scene* scene )
 {
+    UNUSED( scene );
+
     auto c = dest->FindComponent<Transform>();
     if ( !c )
     {
@@ -114,10 +116,10 @@ void Transform::Unmerge( Object* dest, JGL::Scene* scene )
 Transform::Matrix Transform::GetTranslation( const Vect3& a )
 {
     return {
-        { 1.0f,    0.0f,    0.0f,    a.x() },
-        { 0.0f,    1.0f,    0.0f,    a.y() },
-        { 0.0f,    0.0f,    1.0f,    a.z() },
-        { 0.0f,    0.0f,    0.0f,    1.0f }
+        1.0f,    0.0f,    0.0f,    a.x,
+        0.0f,    1.0f,    0.0f,    a.y,
+        0.0f,    0.0f,    1.0f,    a.z,
+        0.0f,    0.0f,    0.0f,    1.0f
     };
 }
 
@@ -127,25 +129,25 @@ Transform::Matrix Transform::GetRotation( const Vect3& r )
 
     using namespace std;
 
-    Matrix rx = { 
-        { 1.0f,   0.0f,        0.0f,       0.0f },
-        { 0.0f,   cos(r.x()), -sin(r.x()), 0.0f },
-        { 0.0f,   sin(r.x()),  cos(r.x()), 0.0f },
-        { 0.0f,   0.0f,        0.0f,       1.0f }
+    const Matrix rx = { 
+        1.0f,   0.0f,        0.0f,       0.0f,
+        0.0f,   cos(r.x), -sin(r.x), 0.0f,
+        0.0f,   sin(r.x),  cos(r.x), 0.0f,
+        0.0f,   0.0f,        0.0f,       1.0f
     };
 
-    Matrix ry = { 
-        {  cos(r.y()), 0.0f,   sin(r.y()), 0.0f },
-        {  0.0f,       1.0f,   0.0f,       0.0f },
-        { -sin(r.y()), 0.0f,   cos(r.y()), 0.0f },
-        { 0.0f,        0.0f,   0.0f,       1.0f }
+    const Matrix ry = { 
+         cos(r.y), 0.0f,   sin(r.y), 0.0f,
+         0.0f,       1.0f,   0.0f,       0.0f,
+        -sin(r.y), 0.0f,   cos(r.y), 0.0f,
+        0.0f,        0.0f,   0.0f,       1.0f
     };
 
-    Matrix rz = { 
-        { cos(r.z()), -sin(r.z()), 0.0f, 0.0f },
-        { sin(r.z()),  cos(r.z()), 0.0f, 0.0f },
-        { 0.0f,        0.0f,       1.0f, 0.0f },
-        { 0.0f,        0.0f,       0.0f, 1.0f }
+    const Matrix rz = { 
+        cos(r.z), -sin(r.z), 0.0f, 0.0f,
+        sin(r.z),  cos(r.z), 0.0f, 0.0f,
+        0.0f,        0.0f,       1.0f, 0.0f,
+        0.0f,        0.0f,       0.0f, 1.0f
     };
 
     return rx * ry * rz; 
@@ -154,10 +156,10 @@ Transform::Matrix Transform::GetRotation( const Vect3& r )
 Transform::Matrix Transform::GetScale( const Vect3& scale )
 {
     return {
-        { scale.x(), 0.0f,      0.0f,      0.0f },
-        { 0.0f,      scale.y(), 0.0f,      0.0f },
-        { 0.0f,      0.0f,      scale.z(), 0.0f },
-        { 0.0f,      0.0f,      0.0f,      1.0f }
+        scale.x, 0.0f,      0.0f,      0.0f,
+        0.0f,      scale.y, 0.0f,      0.0f,
+        0.0f,      0.0f,      scale.z, 0.0f,
+        0.0f,      0.0f,      0.0f,    1.0f
     };
 }
 

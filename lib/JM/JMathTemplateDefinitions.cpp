@@ -41,13 +41,13 @@ constexpr Vector<D,T>::Vector( Vect4 v )
 }
 
 template<size_t D, typename T>
-T& Vector<D,T>::operator[]( size_t a )
+constexpr T& Vector<D,T>::operator[]( size_t a )
 {
   return values[a];
 }
 
 template<size_t D, typename T>
-T Vector<D,T>::operator[]( size_t a ) const
+constexpr T Vector<D,T>::operator[]( size_t a ) const
 {
   return values[a];
 }
