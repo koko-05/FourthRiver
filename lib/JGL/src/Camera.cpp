@@ -33,12 +33,12 @@ void Camera::calculateView()
         0.0f, 0.0f, 0.0f, 1.0f         
     };
 
-    Matrix transform = 
+    const Matrix transform = 
     {
          RightAxis.x, RightAxis.y, RightAxis.z, 0.0f,
          UpAxis.x,    UpAxis.y,    UpAxis.z,    0.0f,
          Direction.x, Direction.y, Direction.z, 0.0f,
-         0.0f,          0.0f,          0.0f,          1.0f
+         0.0f,        0.0f,        0.0f,        1.0f
     };
 
     mView = transform * translation;
@@ -75,5 +75,16 @@ void Camera::MoveDirection( float yaw, float pitch )
     SetDirection( mYaw + yaw, mPitch + pitch );
 }
 
+JM::ProjectionData Camera::DefaultCameraData( int w, int h )
+{
+    JM::ProjectionData ret;
+    ret.isPerspective = true;
+    ret.f   = DEFAULT_FAR_PLANE; ret.n = DEFAULT_NEAR_PLANE;
+    ret.h   = h;
+    ret.w   = w;
+    ret.fov = DEFAULT_FOV;
+
+    return ret;
+}
 
 }

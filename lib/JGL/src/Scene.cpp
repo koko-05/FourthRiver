@@ -50,11 +50,7 @@ Scene* CALLBACK_INSTANCE_PARAMETER = nullptr;
 
 Scene::Scene( glContext& rContext ) 
     : mRenderContext( &rContext ), 
-      mDefaultCamera( { true, 100.0f, 0.1f, 
-                        mRenderContext->Size().width  / -2.0f,
-                        mRenderContext->Size().width  /  2.0f,
-                        mRenderContext->Size().height /  2.0f,
-                        mRenderContext->Size().height / -2.0f } )
+      mDefaultCamera( Camera::DefaultCameraData( mRenderContext->Size().width, mRenderContext->Size().height ) )
 {  }
 
 Scene::Scene( const Scene& v ) 

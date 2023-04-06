@@ -31,15 +31,14 @@ float deg2rad( float degs )
 ProjectionMatrix Projection_Perspective( ProjectionData d )
 {
   ProjectionMatrix ret;
-  ret.data = d;
-  ret.data.isPerspective = true;
-  float rl = d.r - d.l, tb = d.t - d.b, fn = d.f - d.n;
+  ret.data   = d;
+  float tans = std::tan( d.fov * 0.5f );
 
   ret.matrix = { 
-    (2.0f * d.n) / rl, 0.0f,             ( d.r + d.l ) / rl,    0.0f,
-    0.0f,             (2.0f * d.n) / tb, ( d.t + d.b ) / tb,    0.0f,
-    0.0f,              0.0f,            -( d.f + d.n ) / fn, -( d.f * d.n ) / fn,
-    0.0f,              0.0f,              -1.0f,                0.0f
+    1.0f / ( tans * ( d.w / d.h ) ), 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f / tans, 0.0f, 0.0f,
+    0.0f, 0.0f, ( d.n + d.f ) / ( d.n - d.f ), ( 2.0f * d.n * d.f ) / ( d.n - d.f ),
+    0.0f, 0.0f, -1.0f, 0.0f
   };
 
   return ret;

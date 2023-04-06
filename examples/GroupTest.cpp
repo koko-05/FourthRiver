@@ -32,7 +32,7 @@ public:
 public:
     /* Objects */
     Group mGroup;
-    FourthRiver::Components::Transform* SelectedTransform = nullptr;
+    FourthRiver::Object* SelectedObject = nullptr;
 
 public:
 
@@ -43,6 +43,20 @@ public:
 
     void OnExit() override
     {  }
+
+    void renderTransformMods( FourthRiver::Object* ptr )
+    {
+        if ( !ptr ) return;
+        auto& transform = ptr->GetComponent<FourthRiver::Components::Transform>();
+
+        float scale = transform.Scale.x;
+
+        ImGui::SliderFloat ( "Scale: ", &scale, 0.0f, 1.0f );
+        ImGui::SliderFloat3( "Pos:   ", &transform.Position.x, -10.0f, 10.0f );
+        ImGui::SliderFloat3( "Rot:   ", &transform.Rotation.x, -1.0f, 1.0f );
+
+        transform.Scale = { scale };
+    }
 
     void ImGuiRenderGroup( FourthRiver::ObjectGroup& grp, size_t depth = 0 )
     {
@@ -57,14 +71,20 @@ public:
         memcpy( stringBuffer + offset + 5, grp.name, MAX_OSIZE );
 
         if ( ImGui::Button( stringBuffer ) )
-            SelectedTransform = &( grp.GetComponent<FourthRiver::Components::Transform>() );
+            SelectedObject = static_cast<FourthRiver::Object*>(&grp);
+
+        if ( SelectedObject == static_cast<FourthRiver::Object*>(&grp) )
+            renderTransformMods( SelectedObject );
 
         stringBuffer[offset++] = '\t';
         for ( const auto& obj : grp.mObjects  )
         {
             memcpy( stringBuffer + offset, obj->name, MAX_OSIZE );
             if ( ImGui::Button( stringBuffer ) )
-                SelectedTransform = &( obj->GetComponent<FourthRiver::Components::Transform>() );
+                SelectedObject = obj.get();
+
+            if ( SelectedObject == obj.get() )
+                renderTransformMods( SelectedObject );
         }
 
         for ( const auto& g : grp.mGroups )
@@ -83,16 +103,6 @@ public:
             ImGui::Begin("DEBUG WINDOW!");
             ImGui::Text("%.2fms (%i FPS)\n", GetContext().FrameTime, GetContext().FPS );
 
-            if ( SelectedTransform )
-            {
-                float scale = SelectedTransform->Scale.x;
-
-                ImGui::SliderFloat ( "Scale: ", &scale, 0.0f, 1.0f );
-                ImGui::SliderFloat3( "Pos:   ", &SelectedTransform->Position.x, -10.0f, 10.0f );
-                ImGui::SliderFloat3( "Rot:   ", &SelectedTransform->Rotation.x, -1.0f, 1.0f );
-
-                SelectedTransform->Scale = { scale };
-            }
 
             ImGuiRenderGroup( mGroup );
 

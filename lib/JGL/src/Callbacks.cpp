@@ -53,18 +53,12 @@ void Callbacks::DefaultWindowResizeCallback( Scene& i, int w, int h )
     /* modify the projection matrix if on Perspective */
     if ( !i.GetCamera().mProjection.data.isPerspective ) return;
 
-    auto& proj    = i.GetCamera().mProjection;
+    auto& proj    = i.GetCamera().mProjection.matrix;
     auto& context = i.GetContext().renderContext();
 
     /* Gets the (1.0f / tan(fov * 0.5)) from the proj matrix */
-    // float frustumScale = proj.mVals[0][0] * ( (float)context.mSx / (float)context.mSy );
-    // proj.mVals[0][0]   = frustumScale / ( (float)w / (float)h);
-    auto new_proj = i.GetCamera().mProjection.data;
-    new_proj.l = w / -2.0f;
-    new_proj.r = w /  2.0f;
-    new_proj.t = w /  2.0f;
-    new_proj.b = w / -2.0f;
-    proj = JM::Projection( new_proj );
+    float frustumScale = proj[0][0] * ( (float)context.mSx / (float)context.mSy );
+    proj[0][0]   = frustumScale / ( (float)w / (float)h);
 
     context.Size();
 }

@@ -167,7 +167,7 @@ Matrix<sx,sy,T>::M_type Matrix<sx,sy,T>::Transpose() const
 
   for (size_t y = 0; y < sy; y++)
       for ( size_t x = 0; x < sx; x++)
-          temp.Get( y, x ) = Get( x, y );
+          temp.Get( x, y ) = Get( y, x );
   
   return temp;
 }
@@ -189,7 +189,6 @@ Vector<vd> Matrix<sx,sy,T>::operator*( const Vector<vd>& v ) const
   return Multiply( v );
 }
 
-
 template < size_t sx, size_t sy, typename T >
 template < size_t ox, size_t oy, typename ot >
 Matrix<ox,sy,T> Matrix<sx,sy,T>::Multiply( const Matrix<ox,oy,ot>& m ) const
@@ -198,16 +197,17 @@ Matrix<ox,sy,T> Matrix<sx,sy,T>::Multiply( const Matrix<ox,oy,ot>& m ) const
 
   Matrix<ox, sy> c;
 
-  for (size_t i = 0; i < sy; i++)
-      for (size_t j = 0; j < ox; j++)
-      {
-          T val = 0.0f;
-          for ( size_t k = 0; k < oy; k++ )
-              val += Get(k, i) * m.Get(j, k);
+  for ( size_t i = 0; i < sy; i++ )
+  {
+    for ( size_t j = 0; j < ox; j++ )
+    {
+      c[i][j] = 0;
 
-          c.Get(j,i) = val;
-      }
-  
+      for ( size_t k = 0; k < oy; k++ )
+        c[i][j] += Get( k, i ) * m.Get( j, k );
+    }
+  }
+
   return c;
 }
 

@@ -11,10 +11,10 @@ TODO:
   - ~~Basic OpenGL Infrastructure ( VBO, VAO, IBO, Shaders, Textures, etc )~~
   - ~~Basic Engine ( MVP )~~ Need To Optimize!
   - ~~Component Infrastructure~~
+  - ~~Load Mesh from .obj file~~
+    - ~~Add groups~~
+  - Add pivots for Transform Component
   - Dynamic allocation for components
-  - Proper Global default shader
-  - Load Mesh from .obj file 
-    - Add groups
   - Materials ( Further Shader and Texture abstraction )
       - Pixel Art shader, etc
   - Batch rendering support

@@ -42,9 +42,9 @@ public:
    Vect3 Position  = { 0.0f, 0.0f, 0.0f }; 
 
 private:
-   Vect3 cScale; 
-   Vect3 cRotation;
-   Vect3 cPosition; 
+   Vect3 cScale    = { 0 }; 
+   Vect3 cRotation = { 0 };
+   Vect3 cPosition = { 0 }; 
 
 };
 

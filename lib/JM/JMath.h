@@ -233,7 +233,11 @@ public:
 struct ProjectionData
 {
   bool isPerspective;
-  float f, n, l, r, t, b;
+  float f, n;
+  union {  
+    struct { float l, r, t, b; };
+    struct { float h, w, fov;  };
+  };
 };
 
 struct ProjectionMatrix
