@@ -9,6 +9,7 @@
 #include "JGL/Texture.h"
 #include "JGL/Camera.h"
 #include "JGL/Callbacks.h"
+#include "LightManager.h"
 
 /* 
  * Scene abstraction for OpenGL
@@ -116,6 +117,8 @@ private: /* private loops */
 public: /* Callback manager */
     Callbacks     mCallbackManager;
     size_t        mExitStatus = 0; /* -1 reserverd for scene instatiotion error */
+
+    LightManager mLightManager;
 
 public:
     glContext*    mRenderContext;

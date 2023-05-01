@@ -12,6 +12,17 @@
  * */
 
 
+
+#ifndef DEF_SH_SRC_VERT
+  #define DEF_SH_SRC_VERT DEFAULT_SHADER_SRC_VERT
+#endif
+#ifndef DEF_SH_SRC_FRAG
+  #define DEF_SH_SRC_FRAG DEFAULT_SHADER_SRC_FRAG
+#endif
+
+extern const char* DEF_SH_SRC_VERT;
+extern const char* DEF_SH_SRC_FRAG;
+
 namespace FourthRiver { namespace Components {
 
     class Shader : public Component, public JGL::Shader
@@ -30,13 +41,16 @@ public:
 public:
     void SetCurrentShader( JGL::Shader* shader );
     void SetMacroOnShader( JGL::Shader* shader );
+    void SetLightingUniforms();
     JGL::Shader* mCurrentShader = nullptr;
+
+    const char* DefaultSourceVertex   = DEF_SH_SRC_VERT;
+    const char* DefaultSourceFragment = DEF_SH_SRC_FRAG;
 
 private:
     std::string CreateStringMacro( const JGL::VertexElement& ve, size_t i );
     char* CreateMacroDef( JGL::VertexArray& v );
     char* lastGenMacroDef = nullptr;
-
 
 };
 

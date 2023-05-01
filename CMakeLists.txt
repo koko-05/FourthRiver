@@ -17,7 +17,7 @@ endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "examples/GroupTest.cpp" 
+    "examples/Lighting.cpp" 
 
     "src/FourthRiver.cpp"
     "src/Component.cpp"
@@ -27,6 +27,7 @@ add_executable(${name}
     "src/Transform.cpp"
     "src/Mesh.cpp"
     "src/ObjectGroup.cpp"
+    "src/LightSource.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"
@@ -41,7 +42,7 @@ add_executable(${name}
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 
     "lib/JGL/src/Shader.cpp" "lib/JGL/src/Texture.cpp" 
     "lib/JGL/src/VertexArray.cpp" "lib/JGL/src/Camera.cpp" 
-    "lib/JGL/src/Callbacks.cpp"
+    "lib/JGL/src/Callbacks.cpp" "lib/JGL/src/LightManager.cpp"
 
     "lib/glad/glad.c"
 )

@@ -2,12 +2,47 @@
 #include "JGL/Scene.h"
 #include "ComponentManagerTemplates.cpp"
 
+
+/* TODO: Turn this into a conditional to object flags  macro like FR_VAO_ATTRIBS */
+const char* DEFAULT_SHADER_SRC_VERT = 
+    "\n\
+    #version 330 core \n\
+    \n\
+    \n\
+    FR_VAO_ATTRIBS\n\
+    \n\
+    layout (std140) uniform FR_LightingBlock \n\
+    {\n\
+        vec3 LightsColors[256]; //    16      |       0 \n\
+        uint LightCount;        //    4       |     4096\n\
+    };\n\
+    \n\
+    uniform mat4 uMVP;\n\
+    out vec4 oColor;\n\
+    \n\
+    void main()\n\
+    {\n\
+        gl_Position = uMVP * vec4( pos, 1.0 );\n\
+        oColor      = vec4( 1.0 );\n\
+    } ";
+
+const char* DEFAULT_SHADER_SRC_FRAG = 
+    "\n\
+    #version 330 core \n\
+    \n\
+    layout(location = 0) out vec4 color;\n\
+    in vec4 oColor; \n\
+    \n\
+    void main()\n\
+    {\n\
+        color = oColor; \n\
+    }";
+
 namespace FourthRiver
 {
 
 namespace Components
 {
-
 
 Shader::Shader()
 {
@@ -55,26 +90,38 @@ char* Shader::CreateMacroDef( JGL::VertexArray& va )
     return dh;
 }
 
-void Shader::SetMacroOnShader( JGL::Shader* shader )
+void Shader::SetLightingUniforms()
+{
+    if ( flags & OBJECT_LIGHTING_EFFECT_BIT )
+    {
+        ASSERT( mCurrentShader->gl_Program, "Attempted to set Lighting Uniforms on empty shader! (%s)", name );
+        mCurrentShader->Bind();
+        auto index = glGetUniformBlockIndex( mCurrentShader->gl_Program, "FR_LightingBlock" );
+        glUniformBlockBinding( mCurrentShader->gl_Program, index, 0 );
+    }
+}
+
+void Shader::SetMacroOnShader( JGL::Shader* sh )
 {
     ASSERT( mesh, "Make sure you have a mesh before creating a shader!" );
     
-    if ( !shader || !shader->gl_Program )
+    if ( !sh || !sh->gl_Program )
     {
         SetCurrentShader( static_cast<JGL::Shader*>(this) );
         Shader::SetMacroDef( CreateMacroDef( mesh->VAO ) );
-        Shader::CreateShaderF( "src/shader.glsl", '~' );
+        Shader::CreateShaderS( DefaultSourceVertex, DefaultSourceFragment );
+        SetLightingUniforms();
         return;
     }
 
     if ( lastGenMacroDef ) delete[] lastGenMacroDef;
-    shader->SetMacroDef( CreateMacroDef( mesh->VAO ) );
-    shader->CreateShaderS( shader->VertexSource.c_str(), shader->FragmentSource.c_str() );
+    sh->SetMacroDef( CreateMacroDef( mesh->VAO ) );
+    sh->CreateShaderS( sh->VertexSource.c_str(), sh->FragmentSource.c_str() );
 }
 
-void Shader::SetCurrentShader( JGL::Shader* shader )
+void Shader::SetCurrentShader( JGL::Shader* sh )
 {
-    mCurrentShader = shader;
+    mCurrentShader = sh;
 }
 
 void Shader::Merge( Object* dest, JGL::Scene* scene )

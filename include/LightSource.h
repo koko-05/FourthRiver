@@ -1,35 +1,45 @@
 #pragma once
 #include "JM/JMath.h"
+#include "JGL/Scene.h"
 #include "Component.h"
+#include "Shader.h"
 
 /*
  * Defines a Light Source Component for any
  * object 
+ *
  * */
 
 #ifndef LIGHT_SHADER_SRC_PREFIX
-#define LIGHT_SHADER_SRC_PREFIX FR_SHADER_LIGHT_SOURCE;
+#define LIGHT_SHADER_SRC_PREFIX 
 #endif // !LIGHT_SHADER_SRC
 
-#define LIGHT_SHADER_SRC_FRAG LIGHT_SHADER_SRC_PREFIX##_FRAG
-#define LIGHT_SHADER_SRC_VERT LIGHT_SHADER_SRC_PREFIX##_VERT
+
+#ifndef LIGHT_SHADER_SRC_FRAG
+  #define LIGHT_SHADER_SRC_FRAG FR_SHADER_LIGHT_SOURCE_FRAG
+#endif
+#ifndef LIGHT_SHADER_SRC_VERT
+  #define LIGHT_SHADER_SRC_VERT FR_SHADER_LIGHT_SOURCE_VERT
+#endif
+
+extern const char* LIGHT_SHADER_SRC_FRAG;
+extern const char* LIGHT_SHADER_SRC_VERT;
 
 namespace FourthRiver
 {
 namespace Components
 {
 
-extern const char* LIGHT_SHADER_SRC_FRAG;
-extern const char* LIGHT_SHADER_SRC_VERT;
-
 class LightSource
-    : public virtual Shader
+    : public Shader
 {
 public:
     LightSource( JM::Vect3 color );
-    LightSource();
 
-    static constexpr uint16_t mId = 4;
+    static constexpr uint16_t mId = 2;
+
+public:
+    void UpdateInformation( JGL::Scene* scene );
 
 public:
     void Apply( JGL::Scene* sc ) override;
@@ -39,6 +49,7 @@ public:
 
 public:
     JM::Vect3 Color;
+    int mIndex = -1;
 
 };
 
