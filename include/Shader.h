@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "JGL/Shader.h"
+#include "JGL/Scene.h"
 
 /*
  * Shader component allows you to use deafult shader
@@ -10,7 +11,6 @@
  * Fair warning, Shader should be declared in inheretence BEFORE anything that may use shader
  * */
 
-namespace JGL { class Scene; }
 
 namespace FourthRiver { namespace Components {
 
@@ -29,7 +29,13 @@ public:
 
 public:
     void SetCurrentShader( JGL::Shader* shader );
+    void SetMacroOnShader( JGL::Shader* shader );
     JGL::Shader* mCurrentShader = nullptr;
+
+private:
+    std::string CreateStringMacro( const JGL::VertexElement& ve, size_t i );
+    char* CreateMacroDef( JGL::VertexArray& v );
+    char* lastGenMacroDef = nullptr;
 
 
 };

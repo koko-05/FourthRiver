@@ -2,6 +2,7 @@
 #include "JGL/common.h"
 #include <stdlib.h>
 #include <malloc.h>
+#include <cstring>
 #include <fstream>
 
 
@@ -25,9 +26,9 @@ Shader::~Shader()
 
 Shader::Shader( const Shader& v )
     : gl_Program( v.gl_Program ),
-      mUniformsMap( v.mUniformsMap ),
-      mVertexSource( v.mVertexSource ),
-      mFragmentSource( v.mFragmentSource)
+      VertexSource( v.VertexSource ),
+      FragmentSource( v.FragmentSource),
+      mUniformsMap( v.mUniformsMap )
 {  }
 
 Shader Shader::operator=( const Shader& v )
@@ -37,26 +38,32 @@ Shader Shader::operator=( const Shader& v )
     Shader temp( v );
     std::swap(gl_Program, temp.gl_Program);
     std::swap(mUniformsMap, temp.mUniformsMap);
-    std::swap(mVertexSource, temp.mVertexSource);
-    std::swap(mFragmentSource, temp.mFragmentSource);
+    std::swap(VertexSource, temp.VertexSource);
+    std::swap(FragmentSource, temp.FragmentSource);
     return *this;
 }
 
 
 void Shader::CreateShaderS( const char* _vertexSource, const char* _fragSource)
 {
-    #if DEBUG_BUILD == 1
-    {  
-        mVertexSource   = std::move( std::string(_vertexSource) );
-        mFragmentSource = std::move( std::string( _fragSource ) );
+    if ( gl_Program )
+    {
+        glDeleteProgram( gl_Program );
     }
-    #endif
+
+    VertexSource   = std::move( std::string(_vertexSource) );
+    FragmentSource = std::move( std::string( _fragSource ) );
 
     gl_Program = CreateShader( _vertexSource, _fragSource );
 }
 
 void Shader::CreateShaderF( const char* _filePath, const char _delim )
 {
+    if ( gl_Program )
+    {
+        glDeleteProgram( gl_Program );
+    }
+
     static char vertexSource[MAX_SHADER_SOURCE_SIZE + 1]   = { 0 };
     static char fragmentSource[MAX_SHADER_SOURCE_SIZE + 1] = { 0 };
 
@@ -70,10 +77,8 @@ void Shader::CreateShaderF( const char* _filePath, const char _delim )
     file.get();
     file.get( fragmentSource, MAX_SHADER_SOURCE_SIZE, _delim );
 
-    #if DEBUG_BUILD == 1
-        mVertexSource   = vertexSource;
-        mFragmentSource = fragmentSource;
-    #endif
+    VertexSource   = std::move(std::string(vertexSource));
+    FragmentSource = std::move(std::string(fragmentSource));
 
     gl_Program = CreateShader( vertexSource, fragmentSource );
 }
@@ -112,11 +117,54 @@ GLuint Shader::CompileShader( GLenum _type, const char* _src )
     return id;
 }
 
+void Shader::SetMacroDef( char* m )
+{
+    MacroDef = m;
+}
+
+char* Shader::replaceMacros( const char* src )
+{
+    static const char macro[] = "FR_VAO_ATTRIBS";
+    constexpr size_t sm = sizeof( macro ) / sizeof ( macro[0] );
+    const size_t srs = strlen( src );
+    const size_t mds = strlen( MacroDef );
+
+    char* ptr = const_cast<char*>(src);
+    while ( *++ptr )
+    {
+        auto p = ptr;
+        size_t i = 0;
+        for ( ; *p == macro[i]; i++ ) p++;
+
+        if ( i + 1 == sm )
+        {
+            for ( auto pd = ptr; pd < sm + ptr; pd++ )
+            {}
+
+            auto newSrc = new char[ srs + mds - sm + 1 ];
+            memcpy( newSrc, src, ptr - src );
+            memcpy( newSrc + (ptr - src), MacroDef, mds );
+            memcpy( newSrc + (ptr - src) + mds, ptr + sm, srs - ( ptr - src + sm ) );
+            newSrc[srs + mds - sm] = '\0';
+
+            return newSrc;
+        }
+    }
+
+    return nullptr;
+}
+
 GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
 {
+    auto _vs = replaceMacros( _vertexSrc );
+    auto _fs = replaceMacros( _fragSrc   );
+
+    auto vertexSource = _vs ? _vs : _vertexSrc;
+    auto fragmentSource = _fs ? _fs : _fragSrc;
+
     GLuint pId = glCreateProgram();
-    GLuint vs = CompileShader( GL_VERTEX_SHADER, _vertexSrc );
-    GLuint fs = CompileShader( GL_FRAGMENT_SHADER, _fragSrc );
+    GLuint vs  = CompileShader( GL_VERTEX_SHADER, vertexSource );
+    GLuint fs  = CompileShader( GL_FRAGMENT_SHADER, fragmentSource );
 
     // link the two shaders together
     glAttachShader( pId, vs ); 
@@ -135,6 +183,9 @@ GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
     glDetachShader( pId, fs );
     glDeleteShader( vs ); 
     glDeleteShader( fs ); 
+
+    if (_vs) delete[] _vs;
+    if (_fs) delete[] _fs;
 
     return pId;
 }

@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Shader.h"
 #include "ComponentManagerTemplates.cpp"
 #include <sstream>
 #include <fstream>
@@ -24,8 +25,7 @@ Mesh::Mesh()
 void Mesh::Apply( JGL::Scene* sc )
 {
     UNUSED( sc );
-    JGL::Mesh* m = static_cast<JGL::Mesh*>(this);
-    Object::mesh = m;
+    Object::mesh = static_cast<JGL::Mesh*>(this);
 }
 
 
@@ -49,9 +49,9 @@ void Mesh::CreateAttributeFromFileData( std::vector<FileData>& vect, JGL::Vertex
 {
     auto& o = vect[0];
 
-    if ( o.pos )   attrib.Add( GL_FLOAT, 3 );
-    if ( o.uvs )   attrib.Add( GL_FLOAT, 2 );
-    if ( o.norms ) attrib.Add( GL_FLOAT, 3 );
+    if ( o.pos )   attrib.Add( GL_FLOAT, 3, "pos"  );
+    if ( o.uvs )   attrib.Add( GL_FLOAT, 2, "uv"   );
+    if ( o.norms ) attrib.Add( GL_FLOAT, 3, "norm" );
 }
 
 void Mesh::LoadFromFile( const char* filePath, size_t index, std::vector<FileData>& vects, std::vector<uint32_t>& indices)
@@ -169,16 +169,26 @@ void Mesh::LoadSimpleFromFile( const char* filePath, size_t index )
     std::vector<FileData> fileData;
     std::vector<uint32_t> fileIndices;
 
+    // Get Data
     LoadFromFile( filePath, index, fileData, fileIndices );
     auto fileDataPtr = FileData::GetDataFromVector(fileData, dataSize, dataESize);
 
+    // Parse Data
     constexpr uint32_t u32s = sizeof(uint32_t);
     CreateVertexBuffer( GL_STATIC_DRAW, 3, fileDataPtr.get(), dataSize, dataESize );
     CreateIndexBuffer( GL_STATIC_DRAW, fileIndices.data(), fileIndices.size() * u32s, u32s );
 
+    // Create VAO
     JGL::VertexAttribute attrib; 
     CreateAttributeFromFileData( fileData, attrib );
     VAO.AddAttrib( VBO, IBO, attrib );
+
+    mesh = static_cast<JGL::Mesh*>(this);
+
+    // Update Shader macro
+    auto sh = FindComponent<Shader>();
+    if ( sh )
+        sh->SetMacroOnShader( sh->mCurrentShader );
 }
 
 void Mesh::LoadVertexesFromFile( const char* filePath )

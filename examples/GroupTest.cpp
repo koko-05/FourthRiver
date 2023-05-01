@@ -70,9 +70,7 @@ public:
         memcpy( stringBuffer + offset, "GRP: ", 5 );
         memcpy( stringBuffer + offset + 5, grp.name, MAX_OSIZE );
 
-        if ( ImGui::Button( stringBuffer ) )
-            SelectedObject = static_cast<FourthRiver::Object*>(&grp);
-
+        if ( ImGui::Button( stringBuffer ) ) SelectedObject = static_cast<FourthRiver::Object*>(&grp);
         if ( SelectedObject == static_cast<FourthRiver::Object*>(&grp) )
             renderTransformMods( SelectedObject );
 

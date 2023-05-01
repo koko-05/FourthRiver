@@ -20,6 +20,7 @@ struct VertexElement
     GLenum type;
     GLuint count;
     bool   normalized;
+    const char* name;
 };
 
 
@@ -34,7 +35,7 @@ public: /* Initialization and destruction, and copying */
     VertexAttribute& operator=( const VertexAttribute& v ) = default;
 
 public: /* add and remove interface TODO: add remove */
-    void Add( GLenum _type, unsigned int _count, bool _normalized = false );
+    void Add( GLenum _type, unsigned int _count, const char * name, bool _normalized = false );
 
 
 public: /* Getters */

@@ -15,9 +15,9 @@ GLuint VertexAttribute::GetStride() const
      return mStride;
 }
 
-void VertexAttribute::Add( GLenum _type, unsigned int _count, bool _normalized )
+void VertexAttribute::Add( GLenum _type, unsigned int _count, const char* name, bool _normalized )
 {  
-    mElements.push_back( { _type, _count, _normalized } );
+    mElements.push_back( { _type, _count, _normalized, name } );
     mStride += GetGLSize( _type ) * _count;
 }
 }

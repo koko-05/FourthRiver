@@ -12,7 +12,7 @@ if(MSVC)
     add_compile_options( /W4 /WX )
 else()
     add_compile_options( -Wall -Wextra ) 
-    add_compile_options( -ggdb3 -DDEBUG_BUILD )
+    add_compile_options( -g3 -DDEBUG_BUILD )
 endif()
 
 # Compile the passed source files into an executable 

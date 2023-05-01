@@ -8,4 +8,5 @@
 #include "Transform.h"          /* ID: 1   */
 #include "Shader.h"             /* ID: 2   */
 #include "Mesh.h"               /* ID: 3   */
+#include "LightSource.h"        /* ID: 4   */
 #include "ComponentManager.h"   /* ID: N/A */
