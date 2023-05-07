@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "JGL/Scene.h"
+#include "algorithm"
 #include "ComponentManagerTemplates.cpp"
 
 
@@ -107,21 +108,57 @@ void Shader::SetMacroOnShader( JGL::Shader* sh )
     
     if ( !sh || !sh->gl_Program )
     {
-        SetCurrentShader( static_cast<JGL::Shader*>(this) );
+        SetShader( static_cast<JGL::Shader*>(this) );
         Shader::SetMacroDef( CreateMacroDef( mesh->VAO ) );
-        Shader::CreateShaderS( DefaultSourceVertex, DefaultSourceFragment );
+        Shader::CreateShaderS( BaseVertexSource.c_str(), BaseFragmentSource.c_str() );
         SetLightingUniforms();
         return;
     }
 
     if ( lastGenMacroDef ) delete[] lastGenMacroDef;
     sh->SetMacroDef( CreateMacroDef( mesh->VAO ) );
-    sh->CreateShaderS( sh->VertexSource.c_str(), sh->FragmentSource.c_str() );
+
+    auto ssc = BaseVertexSource + BaseFragmentSource + std::string(sh->MacroDef);
+    auto altShader = CheckSource( ssc );
+
+    if ( !altShader ) 
+    {
+        sh->CreateShaderS( 
+            sh->VertexSource.c_str(), 
+            sh->FragmentSource.c_str() );
+
+        ShaderCache[ssc] = static_cast<JGL::Shader*>( this );
+    }
+    else
+        mCurrentShader = altShader;
 }
 
-void Shader::SetCurrentShader( JGL::Shader* sh )
+JGL::Shader* Shader::CheckSource( const std::string& sh )
+{
+    auto it = ShaderCache.find( sh );
+    if ( it == ShaderCache.end() )
+        return nullptr;
+    else
+        return (*it).second;
+}
+
+void Shader::SetShader( JGL::Shader* sh )
 {
     mCurrentShader = sh;
+}
+
+void Shader::SetShader( std::string vs, std::string fs )
+{
+    BaseVertexSource = vs;
+    BaseFragmentSource = fs;
+}
+
+void Shader::CreateShader()
+{  UpdateShader(); }
+
+void Shader::UpdateShader()
+{
+    SetMacroOnShader( static_cast<JGL::Shader*>( this ) );
 }
 
 void Shader::Merge( Object* dest, JGL::Scene* scene )

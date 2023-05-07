@@ -25,7 +25,9 @@ extern const char* DEF_SH_SRC_FRAG;
 
 namespace FourthRiver { namespace Components {
 
-    class Shader : public Component, public JGL::Shader
+extern std::unordered_map<std::string, JGL::Shader*> ShaderCache;
+
+class Shader : public Component, public JGL::Shader
 {
 public:
     Shader();
@@ -39,13 +41,26 @@ public:
     uint16_t GetID() const override;
 
 public:
-    void SetCurrentShader( JGL::Shader* shader );
+    void CreateShader(); // alias for UpdateShader
+    void UpdateShader();
+
+public:
+    void SetShader( JGL::Shader* shader );
+    void SetShader( std::string vs, std::string fs );
+
+public:
     void SetMacroOnShader( JGL::Shader* shader );
     void SetLightingUniforms();
+
+public:
     JGL::Shader* mCurrentShader = nullptr;
 
-    const char* DefaultSourceVertex   = DEF_SH_SRC_VERT;
-    const char* DefaultSourceFragment = DEF_SH_SRC_FRAG;
+private:
+    std::string BaseVertexSource   = DEF_SH_SRC_VERT;
+    std::string BaseFragmentSource = DEF_SH_SRC_FRAG;
+
+private:
+    JGL::Shader* CheckSource( const std::string& sh );
 
 private:
     std::string CreateStringMacro( const JGL::VertexElement& ve, size_t i );

@@ -7,6 +7,8 @@ namespace FourthRiver
 namespace Components
 {
 
+std::unordered_map<std::string, JGL::Shader*> ShaderCache;
+
 const char* FR_SHADER_LIGHT_SOURCE_VERT= "\
   #version 330 core \n\
    \n\
@@ -45,8 +47,7 @@ const char* FR_SHADER_LIGHT_SOURCE_FRAG = "\
 LightSource::LightSource( JM::Vect3 color )
     : Color( color )
 {
-  Shader::DefaultSourceVertex   = LIGHT_SHADER_SRC_VERT;
-  Shader::DefaultSourceFragment = LIGHT_SHADER_SRC_FRAG;
+  SetShader( LIGHT_SHADER_SRC_VERT, LIGHT_SHADER_SRC_FRAG );
 }
 
 

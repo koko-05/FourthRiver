@@ -9,7 +9,6 @@
  *
  * */
 
-
 class Cube 
     : public FourthRiver::Components::Transform,
       public FourthRiver::Components::Mesh,
