@@ -18,6 +18,7 @@ GPUBuffer::GPUBuffer( )
 GPUBuffer::~GPUBuffer()
 {
     if ( !mId ) return;
+    if ( mMemory ) delete[] mMemory;
 
     if ( mMappedMem )
         ReleaseAccess();
@@ -40,6 +41,7 @@ GPUBuffer::GPUBuffer( const GPUBuffer& v )
         );
     glBindBuffer( GL_COPY_WRITE_BUFFER, 0 );
     glBindBuffer( GL_COPY_READ_BUFFER, 0 );
+    UpdateMemory();
     Unbind();
 }
 
@@ -50,6 +52,7 @@ GPUBuffer& GPUBuffer::operator=(GPUBuffer& v )
     GPUBuffer temp( v );
 
     std::swap( temp.mMappedMem, mMappedMem );
+    std::swap( temp.mMemory, mMemory );
     std::swap( temp.mSize,   mSize );
     std::swap( temp.mTarget, mTarget );
     std::swap( temp.mType,   mType );
@@ -61,12 +64,14 @@ GPUBuffer& GPUBuffer::operator=(GPUBuffer& v )
 GPUBuffer::GPUBuffer( GPUBuffer&& v )
 {
     mSize        = v.mSize;
+    mMemory      = v.mMemory;
     mMappedMem   = v.mMappedMem;
     mTarget      = v.mTarget;
     mType        = v.mType;
     mId          = v.mId;
 
     v.mMappedMem = nullptr;
+    v.mMemory    = nullptr;
     v.mSize      = 0;
     v.mTarget    = 0;
     v.mType      = 0;
@@ -113,6 +118,7 @@ void GPUBuffer::Alloc( size_t size, GLenum type, GLenum accessType )
 
     mSize   = size;
     mType   = accessType;
+    UpdateMemory();
     Unbind();
 }
 
@@ -124,7 +130,24 @@ void GPUBuffer::Alloc( size_t size, GLenum type, GLenum accessType, const void* 
     mSize     = size;
     mType     = accessType;
     mElements = elemCount;
+    UpdateMemory();
     Unbind();
+}
+
+void* GPUBuffer::Memory() const
+{
+    return mMemory;
+}
+
+void* UpdateMemory()
+{
+    /* FIXME: TODO: this doesnt account for changing size, be carefull, I cant be bothered to change this rn */
+    if ( !mMemory ) mMemory = new char[size()];
+
+    GetAccess( GL_READ_ONLY );
+    memcpy(mMemory, mMappedMem, size());
+    ReleaseAccess();
+    return Memory();
 }
 
 void* GPUBuffer::data( ) 

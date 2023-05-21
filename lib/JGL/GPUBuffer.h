@@ -36,6 +36,10 @@ public: /* Data interface */
     template<class T>
     void* dataSet( std::initializer_list<T> src );
 
+public:
+    void* Memory() const; /* lets you see a CPU copy of the memory held */
+    void* UpdateMemory(); /* Updates the CPU cache of memeory held by GPU */
+
 public: /* getters and setters */
     size_t   size()          const { return mSize; } /* byte size */
     size_t   count()         const { return mElements; } /* elements size */
@@ -50,6 +54,7 @@ public: /* getters and setters */
 
 private:
     void*    mMappedMem = nullptr;
+    void*    mMemory    = nullptr;
     size_t   mSize      = 0; // byte size
     size_t   mElements  = 0; // element size
     int32_t  mTarget    = 0; // tType 

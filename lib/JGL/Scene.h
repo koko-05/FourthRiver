@@ -118,8 +118,6 @@ public: /* Callback manager */
     Callbacks     mCallbackManager;
     size_t        mExitStatus = 0; /* -1 reserverd for scene instatiotion error */
 
-    LightManager mLightManager;
-
 public:
     glContext*    mRenderContext;
 
