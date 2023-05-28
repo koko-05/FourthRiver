@@ -1,15 +1,24 @@
 #include "FourthRiver.h"
 #include "Components.h"
+#include "ShaderPipeline.h"
+#include "src/ShaderPipelineModules.cpp"
 
 
 class Cube
     : public FourthRiver::Components::Mesh,
-      public FourthRiver::Components::Shader,
-      public FourthRiver::Components::Transform
+      public FourthRiver::Components::Transform,
+      public FourthRiver::Components::ShaderPipeline
 {
 public:
     Cube()
     {
+        using namespace FourthRiver::Components::PipelineModules;
+        AddModule<Core_Vertex>();
+        AddModule<Core_Fragment>();
+        AddModule<MVP>();
+        AddModule<Color>();
+        CreatePipeline();
+
         LoadSimpleFromFile( "assets/cube.obj", 0 );
     }
 };
@@ -46,7 +55,7 @@ public:
         ImGui::Begin("DEBUG WINDOW!");
         ImGui::Text("%.2fms (%i FPS)\n", GetContext().FrameTime, GetContext().FPS );
 
-        ImGui::Text("VERTEX SHADER: \n%s\nFRAG SHADER\n%s", 
+        ImGui::Text("VERTEX SHADER: \n\n%s\n\nFRAG SHADER\n\n%s", 
                 cube.V_SourceComplete().c_str(),
                 cube.F_SourceComplete().c_str() );
 

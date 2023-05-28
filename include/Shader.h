@@ -59,7 +59,7 @@ public:
 public:
     JGL::Shader* mCurrentShader = nullptr;
 
-private:
+protected:
     std::string VertexSource   = DEF_SH_SRC_VERT;
     std::string FragmentSource = DEF_SH_SRC_FRAG;
 
