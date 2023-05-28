@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include "JGL/Shader.h"
 #include "JM/JMath.h"
 #include "GPUBuffer.h"
 
@@ -17,7 +19,7 @@ class UBO
 public:
     void Create( size_t index );
     void UpdateBuffer();
-    void Associate( JGL::Shader& sh, const char* name); /* TODO: glUniformBlockBinding, glGetUniformBlockIndex */
+    void Associate( JGL::Shader& sh, const char* name);
 
 public:
     void* GetLocation( size_t index );
@@ -29,9 +31,6 @@ public:
     T& Get( size_t elementIndex )
     { return *((T*)GetLocation(elementIndex)); }
 
-    template<typename T>
-    Array<T>& Get<Array<T>>( size_t elementIndex )
-    { return { GetLocation(elementIndex), elements.align }; }
 
 public:
     struct UniformElement
@@ -39,7 +38,7 @@ public:
         size_t offset;
         size_t align;
         const char* glslCode = nullptr;
-    }
+    };
 
 public:
     template<typename T>
@@ -48,8 +47,13 @@ public:
         T* arr;
         size_t align;
 
-        operator[]( size_t index ) { return *(T*)((char*)arr + align * index); }
+        T& operator[]( size_t index ) { return *(T*)((char*)arr + align * index); }
     };
+
+public:
+    template<typename T>
+    Array<T> GetArr( size_t elementIndex )
+    { return { GetLocation( elementIndex ), elements[elementIndex].align }; }
 
 public:
     std::vector<UniformElement> elements;

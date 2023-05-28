@@ -41,7 +41,7 @@ add_executable(${name}
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 
     "lib/JGL/src/Shader.cpp" "lib/JGL/src/Texture.cpp" 
     "lib/JGL/src/VertexArray.cpp" "lib/JGL/src/Camera.cpp" 
-    "lib/JGL/src/Callbacks.cpp"
+    "lib/JGL/src/Callbacks.cpp" "lib/JGL/src/UniformBufferObject.cpp"
 
     "lib/glad/glad.c"
 )
