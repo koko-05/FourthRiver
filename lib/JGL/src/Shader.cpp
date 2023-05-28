@@ -117,17 +117,11 @@ GLuint Shader::CompileShader( GLenum _type, const char* _src )
     return id;
 }
 
-void Shader::SetMacroDef( char* m )
+char* Shader::replaceMacros( const char* src, const std::string& macro, const std::string& MacroDef )
 {
-    MacroDef = m;
-}
-
-char* Shader::replaceMacros( const char* src )
-{
-    static const char macro[] = "FR_VAO_ATTRIBS";
-    constexpr size_t sm = sizeof( macro ) / sizeof ( macro[0] );
+    constexpr size_t sm = macro.size();
     const size_t srs = strlen( src );
-    const size_t mds = strlen( MacroDef );
+    const size_t mds = MacroDef.size();
 
     char* ptr = const_cast<char*>(src);
     while ( *++ptr )
@@ -143,7 +137,7 @@ char* Shader::replaceMacros( const char* src )
 
             auto newSrc = new char[ srs + mds - sm + 1 ];
             memcpy( newSrc, src, ptr - src );
-            memcpy( newSrc + (ptr - src), MacroDef, mds );
+            memcpy( newSrc + (ptr - src), MacroDef.c_str(), mds );
             memcpy( newSrc + (ptr - src) + mds, ptr + sm, srs - ( ptr - src + sm ) );
             newSrc[srs + mds - sm] = '\0';
 
@@ -156,11 +150,8 @@ char* Shader::replaceMacros( const char* src )
 
 GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
 {
-    auto _vs = replaceMacros( _vertexSrc );
-    auto _fs = replaceMacros( _fragSrc   );
-
-    auto vertexSource = _vs ? _vs : _vertexSrc;
-    auto fragmentSource = _fs ? _fs : _fragSrc;
+    auto vertexSource   = _vertexSrc;
+    auto fragmentSource = _fragSrc;
 
     GLuint pId = glCreateProgram();
     GLuint vs  = CompileShader( GL_VERTEX_SHADER, vertexSource );

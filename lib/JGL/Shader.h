@@ -37,9 +37,7 @@ public: /* shader creation OpenGL interface */
     void UnBind() const;
 
 public:
-    void SetMacroDef( char* m );
     char* replaceMacros( const char* src );
-    char* MacroDef = nullptr;
 
 public: /* Uniform interface */
     GLint GetUniformLocation( const char* _uniformName );

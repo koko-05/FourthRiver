@@ -1,4 +1,4 @@
-#include "LightSource.h"
+#include "LightEmitter.h"
 #include "src/ComponentManagerTemplates.cpp"
 
 
@@ -7,7 +7,6 @@ namespace FourthRiver
 namespace Components
 {
 
-std::unordered_map<std::string, JGL::Shader*> ShaderCache;
 
 const char* FR_SHADER_LIGHT_SOURCE_VERT= "\
   #version 330 core \n\
@@ -44,26 +43,25 @@ const char* FR_SHADER_LIGHT_SOURCE_FRAG = "\
   } ";
 
 
-LightSource::LightSource( JM::Vect3 color )
-    : Color( color )
+LightEmitter::LightEmitter( const JGL::UBO& context )
 {
   SetShader( LIGHT_SHADER_SRC_VERT, LIGHT_SHADER_SRC_FRAG );
 }
 
 
-void LightSource::UpdateInformation( JGL::Scene* scene )
+void LightEmitter::UpdateInformation(  )
 {
   if ( mIndex == -1 )
   {
-    mIndex = (int)scene->mLightManager.Count;
-    scene->mLightManager.AddLight( { Color } );
+    index = (int)context.size;
+    context.AddLight( &LightAttributes );
     return;
   }
 
-  scene->mLightManager.GetColorLoc()[mIndex] = Color;
+  context.Get<UBO::Array<JM::Vect3>>()[index] = LightAttributes.Color;
 }
 
-void LightSource::Apply( JGL::Scene* sc )
+void LightEmitter::Apply( JGL::Scene* sc )
 {
     UNUSED( sc );
     Component::Object::shader = mCurrentShader;
@@ -72,15 +70,15 @@ void LightSource::Apply( JGL::Scene* sc )
       shader->SetUniform1i( "LightIndex", mIndex );
 }
 
-void LightSource::Merge( Object* d, JGL::Scene* sc )
+void LightEmitter::Merge( Object* d, JGL::Scene* sc )
 {
   /* Be Carefull: this should be exactly the same as shader Merge, same goes to apply and unmerge */
-    auto c = d->FindComponent<LightSource>();
+    auto c = d->FindComponent<LightEmitter>();
     if ( c ) c->Apply( sc );
     else d->shader = mCurrentShader;
 }
 
-void LightSource::Unmerge( Object* d, JGL::Scene* sc )
+void LightEmitter::Unmerge( Object* d, JGL::Scene* sc )
 {
     UNUSED( sc );
     d->shader = nullptr;

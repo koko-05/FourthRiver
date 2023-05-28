@@ -4,11 +4,12 @@
 namespace JGL
 {
 
-void UBO::Create( size_t index )
+void UBO::Create( size_t _index )
 {
     Alloc( size, GL_UNIFORM_BUFFER, GL_STATIC_DRAW );
     Bind();
-    glBindBufferBase( GL_UNIFORM_BUFFER, index, id() );
+    glBindBufferBase( GL_UNIFORM_BUFFER, _index, id() );
+    index = _index;
 }
 
 void UBO::UpdateBuffer()

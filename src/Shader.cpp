@@ -105,41 +105,43 @@ void Shader::SetLightingUniforms()
 void Shader::SetMacroOnShader( JGL::Shader* sh )
 {
     ASSERT( mesh, "Make sure you have a mesh before creating a shader!" );
+
+    auto vaoMacroDef = CreateMacroDef( mesh->VAO );
     
     if ( !sh || !sh->gl_Program )
     {
         SetShader( static_cast<JGL::Shader*>(this) );
-        Shader::SetMacroDef( CreateMacroDef( mesh->VAO ) );
-        Shader::CreateShaderS( BaseVertexSource.c_str(), BaseFragmentSource.c_str() );
-        SetLightingUniforms();
+
+        auto vs = Shader::replaceMacros( BaseVertexSource.c_str(),   "FR_VAO_ATTRIBS", vaoMacroDef );
+        auto fs = Shader::replaceMacros( BaseFragmentSource.c_str(), "FR_VAO_ATTRIBS", vaoMacroDef );
+
+        auto l  = FindComponent<Lighting>();
+                
+        char* _vs = nullptr, _fs = nullptr;
+        if ( l )
+        {
+             _vs = Shader::replaceMacros( vs ? vs : BaseVertexSource.c_str(), "FR_LIGHT_ATTRIBS", l->Context.MacroDef );
+             _fs = Shader::replaceMacros( fs ? fs : BaseFragmentSource.c_str(), "FR_LIGHT_ATTRIBS", l->Context.MacroDef );
+        }
+
+        Shader::CreateShaderS( _vs ? _vs : (vs ? vs : BaseVertexSource.c_str()  )
+                             , _fs ? _fs : (fs ? fs : BaseFragmentSource.c_str()) );
+
+        if (  vs ) delete[] vs;
+        if (  fs ) delete[] fs;
+        if ( _vs ) delete[] _vs;
+        if ( _fs ) delete[] _fs;
         return;
     }
 
     if ( lastGenMacroDef ) delete[] lastGenMacroDef;
     sh->SetMacroDef( CreateMacroDef( mesh->VAO ) );
 
-    auto ssc = BaseVertexSource + BaseFragmentSource + std::string(sh->MacroDef);
-    auto altShader = CheckSource( ssc );
+    sh->CreateShaderS( 
+        sh->VertexSource.c_str(), 
+        sh->FragmentSource.c_str() );
 
-    if ( !altShader ) 
-    {
-        sh->CreateShaderS( 
-            sh->VertexSource.c_str(), 
-            sh->FragmentSource.c_str() );
-
-        ShaderCache[ssc] = static_cast<JGL::Shader*>( this );
-    }
-    else
-        mCurrentShader = altShader;
-}
-
-JGL::Shader* Shader::CheckSource( const std::string& sh )
-{
-    auto it = ShaderCache.find( sh );
-    if ( it == ShaderCache.end() )
-        return nullptr;
-    else
-        return (*it).second;
+    mCurrentShader = sh;
 }
 
 void Shader::SetShader( JGL::Shader* sh )

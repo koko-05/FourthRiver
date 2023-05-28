@@ -2,6 +2,7 @@
 #include "JM/JMath.h"
 #include "JGL/Scene.h"
 #include "Component.h"
+#include "Lighting.h"
 #include "Shader.h"
 
 /*
@@ -30,16 +31,17 @@ namespace FourthRiver
 namespace Components
 {
 
-class LightSource
-    : public Shader
+class LightEmitter
+    : public Lighting
+      public Shader
 {
 public:
-    LightSource( JM::Vect3 color );
+    LightEmitter( const JGL::UBO& context );
 
     static constexpr uint16_t mId = 2;
 
 public:
-    void UpdateInformation( JGL::Scene* scene );
+    virtual void UpdateInformation( );
 
 public:
     void Apply( JGL::Scene* sc ) override;
@@ -48,8 +50,7 @@ public:
     uint16_t GetID() const override { return mId; }
 
 public:
-    JM::Vect3 Color;
-    int mIndex = -1;
+    int index = -1;
 
 };
 

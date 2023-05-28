@@ -12,7 +12,7 @@ namespace JGL
 {
 
 class UBO
-    : protected JGL::GPUBuffer
+    : public JGL::GPUBuffer
 {
 public:
     void Create( size_t index );
@@ -29,7 +29,7 @@ public:
     { return *((T*)GetLocation(elementIndex)); }
 
     template<typename T>
-    UniformArray<T>& Get<UniformArray<T>>( size_t elementIndex )
+    Array<T>& Get<Array<T>>( size_t elementIndex )
     { return { GetLocation(elementIndex), elements.align }; }
 
 public:
@@ -37,12 +37,12 @@ public:
     {
         size_t offset;
         size_t align;
-        const char* glslCode;
+        const char* glslCode = nullptr;
     }
 
 public:
     template<typename T>
-    struct UniformArray 
+    struct Array 
     { 
         T* arr;
         size_t align;
@@ -53,6 +53,7 @@ public:
 public:
     std::vector<UniformElement> elements;
     size_t size = 0;
+    int index = -1;
 
 };
     
