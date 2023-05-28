@@ -53,7 +53,7 @@ private:
     uint8_t        mSlot   = 0;
 
     std::vector< std::pair<GLenum, int> >    mIntAttribs;
-    std::vector< std::pair<GLenum, float*> > mFVecAttribs;
+    std::vector< std::pair<GLenum, float*> > mFVecAttribs; /* TODO: idk why there is a float* here, it could be dangerous; check this out later */
 
 };
 

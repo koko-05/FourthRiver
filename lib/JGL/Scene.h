@@ -9,7 +9,6 @@
 #include "JGL/Texture.h"
 #include "JGL/Camera.h"
 #include "JGL/Callbacks.h"
-#include "LightManager.h"
 
 /* 
  * Scene abstraction for OpenGL

@@ -17,6 +17,7 @@ class UBO
 public:
     void Create( size_t index );
     void UpdateBuffer();
+    void Associate( JGL::Shader& sh, const char* name); /* TODO: glUniformBlockBinding, glGetUniformBlockIndex */
 
 public:
     void* GetLocation( size_t index );

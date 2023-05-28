@@ -17,7 +17,7 @@ endif()
 
 # Compile the passed source files into an executable 
 add_executable(${name} 
-    "examples/Lighting.cpp" 
+    "examples/Simple.cpp" 
 
     "src/FourthRiver.cpp"
     "src/Component.cpp"
@@ -27,7 +27,6 @@ add_executable(${name}
     "src/Transform.cpp"
     "src/Mesh.cpp"
     "src/ObjectGroup.cpp"
-    "src/LightSource.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"
@@ -42,7 +41,7 @@ add_executable(${name}
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 
     "lib/JGL/src/Shader.cpp" "lib/JGL/src/Texture.cpp" 
     "lib/JGL/src/VertexArray.cpp" "lib/JGL/src/Camera.cpp" 
-    "lib/JGL/src/Callbacks.cpp" "lib/JGL/src/LightManager.cpp"
+    "lib/JGL/src/Callbacks.cpp"
 
     "lib/glad/glad.c"
 )
@@ -59,7 +58,6 @@ set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
 add_subdirectory("lib/GLFW")
 
 # Add libraries link
-# Windows: "opengl32" "gdi32" "user32" "kernel32" "shell32" "ws2_32" 
 target_link_libraries( ${name} PUBLIC glfw )
 
 # Set the output directory for executables

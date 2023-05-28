@@ -26,8 +26,8 @@ Shader::~Shader()
 
 Shader::Shader( const Shader& v )
     : gl_Program( v.gl_Program ),
-      VertexSource( v.VertexSource ),
-      FragmentSource( v.FragmentSource),
+      mVertexSource( v.mVertexSource ),
+      mFragmentSource( v.mFragmentSource),
       mUniformsMap( v.mUniformsMap )
 {  }
 
@@ -38,8 +38,8 @@ Shader Shader::operator=( const Shader& v )
     Shader temp( v );
     std::swap(gl_Program, temp.gl_Program);
     std::swap(mUniformsMap, temp.mUniformsMap);
-    std::swap(VertexSource, temp.VertexSource);
-    std::swap(FragmentSource, temp.FragmentSource);
+    std::swap(mVertexSource, temp.mVertexSource);
+    std::swap(mFragmentSource, temp.mFragmentSource);
     return *this;
 }
 
@@ -51,8 +51,8 @@ void Shader::CreateShaderS( const char* _vertexSource, const char* _fragSource)
         glDeleteProgram( gl_Program );
     }
 
-    VertexSource   = std::move( std::string(_vertexSource) );
-    FragmentSource = std::move( std::string( _fragSource ) );
+    mVertexSource   = std::move( std::string(_vertexSource) );
+    mFragmentSource = std::move( std::string( _fragSource ) );
 
     gl_Program = CreateShader( _vertexSource, _fragSource );
 }
@@ -77,8 +77,8 @@ void Shader::CreateShaderF( const char* _filePath, const char _delim )
     file.get();
     file.get( fragmentSource, MAX_SHADER_SOURCE_SIZE, _delim );
 
-    VertexSource   = std::move(std::string(vertexSource));
-    FragmentSource = std::move(std::string(fragmentSource));
+    mVertexSource   = std::move(std::string(vertexSource));
+    mFragmentSource = std::move(std::string(fragmentSource));
 
     gl_Program = CreateShader( vertexSource, fragmentSource );
 }
@@ -119,22 +119,19 @@ GLuint Shader::CompileShader( GLenum _type, const char* _src )
 
 char* Shader::replaceMacros( const char* src, const std::string& macro, const std::string& MacroDef )
 {
-    constexpr size_t sm = macro.size();
+    const size_t sm  = macro.size();
     const size_t srs = strlen( src );
     const size_t mds = MacroDef.size();
 
-    char* ptr = const_cast<char*>(src);
+    const char* ptr = src;
     while ( *++ptr )
     {
         auto p = ptr;
         size_t i = 0;
         for ( ; *p == macro[i]; i++ ) p++;
 
-        if ( i + 1 == sm )
+        if ( i == sm )
         {
-            for ( auto pd = ptr; pd < sm + ptr; pd++ )
-            {}
-
             auto newSrc = new char[ srs + mds - sm + 1 ];
             memcpy( newSrc, src, ptr - src );
             memcpy( newSrc + (ptr - src), MacroDef.c_str(), mds );
@@ -150,8 +147,8 @@ char* Shader::replaceMacros( const char* src, const std::string& macro, const st
 
 GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
 {
-    auto vertexSource   = _vertexSrc;
-    auto fragmentSource = _fragSrc;
+    auto& vertexSource   = _vertexSrc;
+    auto& fragmentSource = _fragSrc;
 
     GLuint pId = glCreateProgram();
     GLuint vs  = CompileShader( GL_VERTEX_SHADER, vertexSource );
@@ -168,15 +165,12 @@ GLuint Shader::CreateShader( const char* _vertexSrc, const char* _fragSrc )
     GLint res;
     glGetProgramiv( pId, GL_VALIDATE_STATUS, &res );
     if ( res == GL_FALSE )
-        std::cout << "Something's wrong with the shader program. Validation failed";
+        DEBUG_PRINT("Something's wrong with the shader program. Validation failed", "[INFO]", stdout );
 
     glDetachShader( pId, vs );
     glDetachShader( pId, fs );
     glDeleteShader( vs ); 
     glDeleteShader( fs ); 
-
-    if (_vs) delete[] _vs;
-    if (_fs) delete[] _fs;
 
     return pId;
 }

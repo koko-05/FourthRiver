@@ -4,19 +4,11 @@
 #include "ComponentManagerTemplates.cpp"
 
 
-/* TODO: Turn this into a conditional to object flags  macro like FR_VAO_ATTRIBS */
 const char* DEFAULT_SHADER_SRC_VERT = 
     "\n\
     #version 330 core \n\
     \n\
-    \n\
     FR_VAO_ATTRIBS\n\
-    \n\
-    layout (std140) uniform FR_LightingBlock \n\
-    {\n\
-        vec3 LightsColors[256]; //    16      |       0 \n\
-        uint LightCount;        //    4       |     4096\n\
-    };\n\
     \n\
     uniform mat4 uMVP;\n\
     out vec4 oColor;\n\
@@ -77,7 +69,7 @@ std::string Shader::CreateStringMacro( const JGL::VertexElement& ve, size_t i )
 }
 
 
-char* Shader::CreateMacroDef( JGL::VertexArray& va )
+void Shader::CreateMacroDef( JGL::VertexArray& va )
 {
     std::string d;
     auto& v = va.getAttribs()[0].attrib.GetArr();
@@ -85,63 +77,13 @@ char* Shader::CreateMacroDef( JGL::VertexArray& va )
     for ( size_t i = 0; i < v.size(); i++ )
         d += CreateStringMacro( v[i], i);
 
-    auto dh = new char[ d.size() + 1 ];
-    lastGenMacroDef = dh;
-    memcpy( dh, d.c_str(), d.size() + 1);
-    return dh;
+    std::swap( GeneratedMacroDef, d );
 }
 
-void Shader::SetLightingUniforms()
+void Shader::SetMacro( )
 {
-    if ( flags & OBJECT_LIGHTING_EFFECT_BIT )
-    {
-        ASSERT( mCurrentShader->gl_Program, "Attempted to set Lighting Uniforms on empty shader! (%s)", name );
-        mCurrentShader->Bind();
-        auto index = glGetUniformBlockIndex( mCurrentShader->gl_Program, "FR_LightingBlock" );
-        glUniformBlockBinding( mCurrentShader->gl_Program, index, 0 );
-    }
-}
-
-void Shader::SetMacroOnShader( JGL::Shader* sh )
-{
-    ASSERT( mesh, "Make sure you have a mesh before creating a shader!" );
-
-    auto vaoMacroDef = CreateMacroDef( mesh->VAO );
-    
-    if ( !sh || !sh->gl_Program )
-    {
-        SetShader( static_cast<JGL::Shader*>(this) );
-
-        auto vs = Shader::replaceMacros( BaseVertexSource.c_str(),   "FR_VAO_ATTRIBS", vaoMacroDef );
-        auto fs = Shader::replaceMacros( BaseFragmentSource.c_str(), "FR_VAO_ATTRIBS", vaoMacroDef );
-
-        auto l  = FindComponent<Lighting>();
-                
-        char* _vs = nullptr, _fs = nullptr;
-        if ( l )
-        {
-             _vs = Shader::replaceMacros( vs ? vs : BaseVertexSource.c_str(), "FR_LIGHT_ATTRIBS", l->Context.MacroDef );
-             _fs = Shader::replaceMacros( fs ? fs : BaseFragmentSource.c_str(), "FR_LIGHT_ATTRIBS", l->Context.MacroDef );
-        }
-
-        Shader::CreateShaderS( _vs ? _vs : (vs ? vs : BaseVertexSource.c_str()  )
-                             , _fs ? _fs : (fs ? fs : BaseFragmentSource.c_str()) );
-
-        if (  vs ) delete[] vs;
-        if (  fs ) delete[] fs;
-        if ( _vs ) delete[] _vs;
-        if ( _fs ) delete[] _fs;
-        return;
-    }
-
-    if ( lastGenMacroDef ) delete[] lastGenMacroDef;
-    sh->SetMacroDef( CreateMacroDef( mesh->VAO ) );
-
-    sh->CreateShaderS( 
-        sh->VertexSource.c_str(), 
-        sh->FragmentSource.c_str() );
-
-    mCurrentShader = sh;
+    ASSERT( mesh, "Tried creating a shader macro with no mesh!" );
+    CreateMacroDef( mesh->VAO );
 }
 
 void Shader::SetShader( JGL::Shader* sh )
@@ -149,10 +91,10 @@ void Shader::SetShader( JGL::Shader* sh )
     mCurrentShader = sh;
 }
 
-void Shader::SetShader( std::string vs, std::string fs )
+void Shader::SetShader( const std::string& vs, const std::string& fs )
 {
-    BaseVertexSource = vs;
-    BaseFragmentSource = fs;
+    VertexSource   = vs;
+    FragmentSource = fs;
 }
 
 void Shader::CreateShader()
@@ -160,7 +102,32 @@ void Shader::CreateShader()
 
 void Shader::UpdateShader()
 {
-    SetMacroOnShader( static_cast<JGL::Shader*>( this ) );
+    if ( !mCurrentShader )
+        SetShader( static_cast<JGL::Shader*>(this) );
+
+    if ( !mCurrentShader->gl_Program )
+    {
+        auto vs = JGL::Shader::replaceMacros( 
+            VertexSource.c_str(), 
+            "FR_VAO_ATTRIBS", 
+            GeneratedMacroDef.c_str() 
+        );
+
+        auto fs = JGL::Shader::replaceMacros( 
+            FragmentSource.c_str(), 
+            "FR_VAO_ATTRIBS", 
+            GeneratedMacroDef.c_str() 
+        );
+
+        Shader::CreateShaderS( 
+            vs ? vs : VertexSource.c_str(),
+            fs ? fs : FragmentSource.c_str()
+        );
+
+        if (  vs ) delete[] vs;
+        if (  fs ) delete[] fs;
+        return;
+    }
 }
 
 void Shader::Merge( Object* dest, JGL::Scene* scene )

@@ -37,7 +37,7 @@ public: /* shader creation OpenGL interface */
     void UnBind() const;
 
 public:
-    char* replaceMacros( const char* src );
+    char* replaceMacros( const char* src, const std::string& macro, const std::string& MacroDef );
 
 public: /* Uniform interface */
     GLint GetUniformLocation( const char* _uniformName );
@@ -58,9 +58,9 @@ private: /* compiling OpenGL private interface */
     GLuint CompileShader( GLenum _type, const char* _scr );
     GLuint CreateShader( const char* _vertexSrc, const char* _fragSrc );
 
-public:
-    std::string VertexSource;
-    std::string FragmentSource;
+protected:
+    std::string mVertexSource;
+    std::string mFragmentSource;
 
 private: /* private member variables */
     std::unordered_map<std::string, GLint> mUniformsMap;

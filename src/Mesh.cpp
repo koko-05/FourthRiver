@@ -187,7 +187,11 @@ void Mesh::LoadSimpleFromFile( const char* filePath, size_t index )
 
     // Update Shader macro
     auto sh = FindComponent<Shader>();
-    if ( sh ) sh->SetMacroOnShader( sh->mCurrentShader );
+    if ( sh ) 
+    {
+        sh->SetMacro();
+        sh->UpdateShader();
+    }
 }
 
 void Mesh::LoadVertexesFromFile( const char* filePath )

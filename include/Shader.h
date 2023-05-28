@@ -23,11 +23,11 @@
 extern const char* DEF_SH_SRC_VERT;
 extern const char* DEF_SH_SRC_FRAG;
 
-namespace FourthRiver { namespace Components {
+namespace FourthRiver { 
 
-extern std::unordered_map<std::string, JGL::Shader*> ShaderCache;
+namespace Components {
 
-class Shader : public Component, public JGL::Shader
+class Shader : public Component, protected JGL::Shader
 {
 public:
     Shader();
@@ -46,26 +46,28 @@ public:
 
 public:
     void SetShader( JGL::Shader* shader );
-    void SetShader( std::string vs, std::string fs );
+    void SetShader( const std::string& vs, const std::string& fs );
+    void SetMacro();
 
 public:
-    void SetMacroOnShader( JGL::Shader* shader );
-    void SetLightingUniforms();
+    const std::string& V_Source() { return VertexSource; }
+    const std::string& F_Source() { return FragmentSource; }
+
+    const std::string& V_SourceComplete() { return mVertexSource; }
+    const std::string& F_SourceComplete() { return mFragmentSource; }
 
 public:
     JGL::Shader* mCurrentShader = nullptr;
 
 private:
-    std::string BaseVertexSource   = DEF_SH_SRC_VERT;
-    std::string BaseFragmentSource = DEF_SH_SRC_FRAG;
-
-private:
-    JGL::Shader* CheckSource( const std::string& sh );
+    std::string VertexSource   = DEF_SH_SRC_VERT;
+    std::string FragmentSource = DEF_SH_SRC_FRAG;
 
 private:
     std::string CreateStringMacro( const JGL::VertexElement& ve, size_t i );
-    char* CreateMacroDef( JGL::VertexArray& v );
-    char* lastGenMacroDef = nullptr;
+    void CreateMacroDef( JGL::VertexArray& v );
+
+    std::string GeneratedMacroDef = " ";
 
 };
 

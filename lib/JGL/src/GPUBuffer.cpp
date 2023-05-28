@@ -1,6 +1,7 @@
 #include "JGL/GPUBuffer.h"
 #include "JGL/common.h"
 #include <algorithm> // std::swap
+#include <cstring>
 
 namespace JGL
 {
@@ -18,7 +19,7 @@ GPUBuffer::GPUBuffer( )
 GPUBuffer::~GPUBuffer()
 {
     if ( !mId ) return;
-    if ( mMemory ) delete[] mMemory;
+    if ( mMemory ) delete[] (char*)mMemory;
 
     if ( mMappedMem )
         ReleaseAccess();
@@ -139,7 +140,7 @@ void* GPUBuffer::Memory() const
     return mMemory;
 }
 
-void* UpdateMemory()
+void* GPUBuffer::UpdateMemory()
 {
     /* FIXME: TODO: this doesnt account for changing size, be carefull, I cant be bothered to change this rn */
     if ( !mMemory ) mMemory = new char[size()];

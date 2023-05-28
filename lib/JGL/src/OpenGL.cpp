@@ -112,7 +112,11 @@ bool glContext::CreateWindow( size_t sx, size_t sy, const char* title, bool useD
 
     glfwSetWindowSizeCallback( mWindow, ResizeCallback );
 
-    DEBUG_PRINT( "Initialized OpenGL!\n", "INFO", stdout );
+    DEBUG_PRINT( "Initialized OpenGL %s \nVendor: %s \nRenderer: %s\n", "INFO", stdout, 
+            (char*)glGetString(GL_VERSION),
+            (char*)glGetString(GL_VENDOR),
+            (char*)glGetString(GL_RENDERER)
+            );
 
     SetBlendingFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD );
     glEnable( GL_DEPTH_TEST );
