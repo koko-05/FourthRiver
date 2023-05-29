@@ -76,13 +76,25 @@ void Texture::SetImgDataF( const char* _filePath, GLenum _target, GLenum _desire
 {
     int width, height, colorChannels;
     stbi_set_flip_vertically_on_load( true );  // flip image
-    /* TODO: use colorChannels to create _inputFormat */
 
     mData = stbi_load(_filePath, &width, &height, &colorChannels, 0); 
+
+    auto inputFormat = _inputFormat;
+    if ( inputFormat == 0 )
+    {
+        switch ( colorChannels )
+        {
+        case 1: inputFormat = GL_RED; break;
+        case 2: inputFormat = GL_RG; break;
+        case 3: inputFormat = GL_RGB; break;
+        case 4: inputFormat = GL_RGBA; break;
+        }
+
+    }
     
     ASSERT( mData, "Failed to load image req for texture! (%s)", _filePath);
 
-    SetImgData( mData,_target, _desiredFormat, _inputFormat, width, height );
+    SetImgData( mData,_target, _desiredFormat, inputFormat, width, height );
 }
 
 

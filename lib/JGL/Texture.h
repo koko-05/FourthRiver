@@ -20,7 +20,7 @@ public:
     ~Texture();
 
 public:
-    void SetImgDataF( const char* _filePath, GLenum _target, GLenum _desiredFormat, GLenum _inputFormat );
+    void SetImgDataF( const char* _filePath, GLenum _target, GLenum _desiredFormat, GLenum _inputFormat = 0);
     void SetImgData( const uint8_t* _data, GLenum _target, GLenum _desiredFormat, GLenum _inputFormat, size_t sx, size_t sy );
 
 public:

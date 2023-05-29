@@ -62,21 +62,20 @@ struct Texturer
     ShaderPipeline::InitFunc Initialize;
     _const uint8_t Target = ShaderPipeline::FS | ShaderPipeline::VS;
 
-    Texturer( const char* samplerName, const char* code, ShaderPipeline::InitFunc in, int dim = 2 )
-        : Initialize( in )
+    Texturer( const char* samplerName, const char* code, ShaderPipeline::InitFunc in, int dim = 2, bool isFirst = true )
+        : Initialize( in ), Source( isFirst ? "out vec2 UV;\n" : "\n")
     {
         Name += samplerName;
 
-        Source += "void " + Name + "() {}\n"
-                + "##~~~##\n" /* Vertex to fragment Transition */
-                + "in vec2 UV;\n";
+        Source += "void " + Name + "() { UV = uv; }\n"
+                + "##~~~##" /* Vertex to fragment Transition */
+                + "in vec2 UV;\n"
                 + "uniform sampler" + std::to_string( dim ) + "D " + samplerName
-                + "\nvoid " + Name + "() { \n" + code + "\n}\n";
+                + ";\nvoid " + Name + "() { \n" + code + "\n}\n";
     }
 
     std::string Name     = "Texturer_";
-    std::string Source   = 
-        "out vec2 UV;\n";
+    std::string Source;
 };
 
 

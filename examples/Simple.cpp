@@ -1,6 +1,7 @@
 #include "FourthRiver.h"
 #include "Components.h"
 #include "src/ShaderPipelineModules.cpp"
+#include "src/ComponentManagerTemplates.cpp"
 
 
 class Cube
@@ -20,14 +21,14 @@ public:
         AddModule<Color>();
         AddModule<Texturer>( Texturer(
                     "testTexture",
-                    "color *= testTexture( uv );",
+                    "color *= texture ( testTexture, UV );",
                     textureSamplerUniforms
                 ) );
         CreatePipeline();
 
         LoadSimpleFromFile( "assets/cube.obj", 0 );
 
-        mTexture.SetImgDataF( "assets/textures/test.png", GL_TEXTURE_2D, GL_RGB, GL_RGB );
+        mTexture.SetImgDataF( "assets/textures/test.png", GL_TEXTURE_2D, GL_RGB );
         SetTexture( mTexture );
 
         ShaderPipeline::InitializeModules();

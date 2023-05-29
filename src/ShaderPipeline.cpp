@@ -16,9 +16,9 @@ void ShaderPipeline::InitializeModules()
         m.Initialize( static_cast<FourthRiver::Object*>(this) );
 }
 
-void ModuleStringFirst( std::string& target, const std::string& name, const std::string& source )
+void ShaderPipeline::ModuleStringFirst( std::string& target, const std::string& name, const std::string& source )
 {
-    target += "\n/* MODULE: " + m.Name + " */\n" + m.Source + "\n";
+    target += "\n/* MODULE: " + name + " */\n" + source + "\n";
 }
 
 void ShaderPipeline::CreatePipeline()
@@ -29,10 +29,17 @@ void ShaderPipeline::CreatePipeline()
     for ( const auto& m : modules )
     {
         auto sep = m.Source.find("##~~~##");
-        if ( sep = std::npos ) sep = m.Source.size() - 1;
-
-        if ( m.Target & 0x01 ) ModuleStringFirst( VertexSource, m.Name, m.Source.substr( 0, sep ) );
-        if ( m.Target & 0x02 ) ModuleStringFirst( FragmentSource, m.Name, m.Source.substr( sep ) );
+        if ( sep == std::string::npos ) 
+        {
+            if ( m.Target & 0x01 ) ModuleStringFirst( VertexSource, m.Name, m.Source );
+            if ( m.Target & 0x02 ) ModuleStringFirst( FragmentSource, m.Name, m.Source );
+        }
+        else
+        {
+            sep += 7;
+            if ( m.Target & 0x01 ) ModuleStringFirst( VertexSource, m.Name, m.Source.substr( 0, sep - 7 ) );
+            if ( m.Target & 0x02 ) ModuleStringFirst( FragmentSource, m.Name, m.Source.substr( sep ) );
+        }
     }
 
     FragmentSource += "/* MAIN */\nvoid main() {\n";

@@ -51,6 +51,9 @@ public:
 public:
     std::vector<Module> modules;
 
+private:
+    void ModuleStringFirst( std::string& target, const std::string& name, const std::string& source );
+
 };
 
 }
