@@ -20,6 +20,8 @@ public:
         CreatePipeline();
 
         LoadSimpleFromFile( "assets/cube.obj", 0 );
+
+        ShaderPipeline::InitializeModules();
     }
 };
 

@@ -10,6 +10,12 @@ void ShaderPipeline::AddModuleM( uint8_t target, const std::string& name, InitFu
     modules.emplace_back( name, src, target, init );
 }
 
+void ShaderPipeline::InitializeModules()
+{
+    for ( const auto& m : modules )
+        m.Initialize( static_cast<FourthRiver::Object*>(this) );
+}
+
 void ShaderPipeline::CreatePipeline()
 {
     VertexSource   = "";
@@ -18,7 +24,7 @@ void ShaderPipeline::CreatePipeline()
     for ( const auto& m : modules )
     {
         std::string& target = m.Target == Shaders::VS ? VertexSource : FragmentSource;
-        target += "/* MODULE: " + m.Name + " */\n" + m.Source + "\n";
+        target += "\n/* MODULE: " + m.Name + " */\n" + m.Source + "\n";
     }
 
     FragmentSource += "/* MAIN */\nvoid main() {\n";

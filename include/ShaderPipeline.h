@@ -42,6 +42,8 @@ public:
     void CreatePipeline();
     void UpdatePipeline();
 
+    void InitializeModules();
+
 public:
     std::vector<Module> modules;
 
