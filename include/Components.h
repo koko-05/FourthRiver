@@ -8,4 +8,6 @@
 #include "Component.h"          /* ID: 0   */
 #include "Transform.h"          /* ID: 1   */
 #include "Shader.h"             /* ID: 2   */
+#include "ShaderPipeline.h"     /* ID: 2   */
 #include "Mesh.h"               /* ID: 3   */
+#include "Texture.h"            /* ID: 4   */

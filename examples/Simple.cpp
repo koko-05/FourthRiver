@@ -1,28 +1,47 @@
 #include "FourthRiver.h"
 #include "Components.h"
-#include "ShaderPipeline.h"
 #include "src/ShaderPipelineModules.cpp"
 
 
 class Cube
     : public FourthRiver::Components::Mesh,
       public FourthRiver::Components::Transform,
-      public FourthRiver::Components::ShaderPipeline
+      public FourthRiver::Components::ShaderPipeline,
+      public FourthRiver::Components::Texture
 {
 public:
     Cube()
     {
         using namespace FourthRiver::Components::PipelineModules;
+
         AddModule<Core_Vertex>();
         AddModule<Core_Fragment>();
         AddModule<MVP>();
         AddModule<Color>();
+        AddModule<Texturer>( Texturer(
+                    "testTexture",
+                    "color *= testTexture( uv );",
+                    textureSamplerUniforms
+                ) );
         CreatePipeline();
 
         LoadSimpleFromFile( "assets/cube.obj", 0 );
 
+        mTexture.SetImgDataF( "assets/textures/test.png", GL_TEXTURE_2D, GL_RGB, GL_RGB );
+        SetTexture( mTexture );
+
         ShaderPipeline::InitializeModules();
     }
+
+    static void textureSamplerUniforms( FourthRiver::Object* obj )
+    {
+        auto& sh = obj->GetComponent<FourthRiver::Components::Shader>();
+
+        sh.SetUniform1i("testTexture", 0);
+    }
+
+public:
+    JGL::Texture mTexture;
 };
 
 class Simple 

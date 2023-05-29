@@ -28,6 +28,7 @@ add_executable(${name}
     "src/Mesh.cpp"
     "src/ObjectGroup.cpp"
     "src/ShaderPipeline.cpp"
+    "src/Texture.cpp"
 
     "lib/imgui/imgui.cpp"
     "lib/imgui/imgui_draw.cpp"

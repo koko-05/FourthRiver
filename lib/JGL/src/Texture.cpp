@@ -76,6 +76,7 @@ void Texture::SetImgDataF( const char* _filePath, GLenum _target, GLenum _desire
 {
     int width, height, colorChannels;
     stbi_set_flip_vertically_on_load( true );  // flip image
+    /* TODO: use colorChannels to create _inputFormat */
 
     mData = stbi_load(_filePath, &width, &height, &colorChannels, 0); 
     
@@ -127,7 +128,7 @@ void Texture::ClearParameters()
 
 void Texture::SetParamsToDefault()
 {
-    const float borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    static const float borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     SetParameter( GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
     SetParameter( GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
     SetParameter( GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );

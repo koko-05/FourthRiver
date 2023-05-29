@@ -28,7 +28,7 @@ public:
         InitFunc    Initialize;
     };
 
-    enum Shaders { VS = 0, FS };
+    enum Shaders { VS = 1, FS = 2 };
 
 public:
     void AddModuleM( uint8_t target, const std::string& name, InitFunc init, const std::string& src );
@@ -37,6 +37,10 @@ public:
                                               static const std::string Source; 
                                               static void Initialize( Object* ) { YourImpl; } */
     { modules.emplace_back( T::Name, T::Source, T::Target, T::Initialize ); }
+
+    template<typename T> 
+    void AddModule( const T& inst )
+    { modules.emplace_back( inst.Name, inst.Source, inst.Target, inst.Initialize ); }
 
 public:
     void CreatePipeline();

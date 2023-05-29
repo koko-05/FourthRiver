@@ -27,7 +27,7 @@ namespace FourthRiver {
 
 namespace Components {
 
-class Shader : public Component, protected JGL::Shader
+class Shader : public Component, public JGL::Shader
 {
 public:
     Shader();
