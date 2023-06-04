@@ -31,6 +31,7 @@ add_executable(${name}
     "src/Texture.cpp"
 
     "lib/imgui/imgui.cpp"
+    "lib/imgui/imgui_demo.cpp"
     "lib/imgui/imgui_draw.cpp"
     "lib/imgui/imgui_tables.cpp"
     "lib/imgui/imgui_widgets.cpp"
@@ -38,6 +39,7 @@ add_executable(${name}
     "lib/imgui/backends/imgui_impl_opengl3.cpp"
 
     "lib/JM/JMath.cpp"
+    "lib/JGL/src/Framebuffer.cpp"
     "lib/JGL/deps/stb_image.cpp" 
     "lib/JGL/src/common.cpp" "lib/JGL/src/GPUBuffer.cpp" 
     "lib/JGL/src/OpenGL.cpp" "lib/JGL/src/Scene.cpp" 

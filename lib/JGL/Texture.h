@@ -16,7 +16,7 @@ public:
     Texture( uint8_t _bindSlot );
     Texture( const Texture& _o );
     Texture( Texture&& v );
-    Texture( ) : mIntAttribs( ), mFVecAttribs( ) {}
+    Texture( );
     ~Texture();
 
 public:
@@ -42,7 +42,6 @@ public:
 public:
     Texture& operator=( Texture& _other );
 
-private:
     GLuint         mId     = 0;
     GLenum         mTarget = 0;
     GLenum         mFormat = 0;

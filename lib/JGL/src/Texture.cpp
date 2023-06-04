@@ -12,6 +12,12 @@ Texture::Texture( uint8_t _bindSlot )
     Bind( mSlot );
 }
 
+Texture::Texture() 
+    : mIntAttribs( ), mFVecAttribs( )
+{ 
+    glGenTextures( 1, &mId );
+}
+
 Texture::Texture( const Texture& _o )
     : mIntAttribs( _o.mIntAttribs ), mFVecAttribs( _o.mFVecAttribs )
 {

@@ -3,7 +3,7 @@
 	url = https://github.com/glfw/glfw.git
 [submodule "lib/imgui"]
 	path = lib/imgui
-	url = https://github.com/ocornut/imgui.git
+	url = https://github.com/ocornut/imgui
 	branch = docking
 [submodule "lib/JGL/deps/stb"]
 	path = lib/JGL/deps/stb

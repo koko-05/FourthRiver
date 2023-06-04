@@ -7,6 +7,7 @@
 #include "imgui/backends/imgui_impl_opengl3.h"
 #include "common.h"
 #include <utility>
+#include <vector>
 
 namespace JGL
 {
