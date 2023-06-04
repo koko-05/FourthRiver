@@ -8,6 +8,9 @@
  *
  * */
 
+#define FR_ShaderPipeline_Start using namespace FourthRiver::Components::PipelineModules
+#define FR_ShaderPipeline_End CreatePipeline()
+
 namespace FourthRiver 
 {
 namespace Components

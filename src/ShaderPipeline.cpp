@@ -54,7 +54,6 @@ void ShaderPipeline::CreatePipeline()
 
     FragmentSource += "}";
     VertexSource   += "}";
-
 }
 
 void ShaderPipeline::UpdatePipeline()

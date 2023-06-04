@@ -13,31 +13,34 @@ class Cube
 public:
     Cube()
     {
-        using namespace FourthRiver::Components::PipelineModules;
-
-        AddModule<Core_Vertex>();
-        AddModule<Core_Fragment>();
-        AddModule<MVP>();
-        AddModule<Color>();
-        AddModule<Texturer>( Texturer(
-                    "testTexture",
-                    "color *= texture ( testTexture, UV );",
-                    textureSamplerUniforms
-                ) );
-        CreatePipeline();
-
-        LoadSimpleFromFile( "assets/cube.obj", 0 );
-
         mTexture.SetImgDataF( "assets/textures/test.png", GL_TEXTURE_2D, GL_RGB );
         SetTexture( mTexture );
+
+        Cube_ShaderPipeline();
+        LoadSimpleFromFile( "assets/cube.obj", 0 );
+
 
         ShaderPipeline::InitializeModules();
     }
 
-    static void textureSamplerUniforms( FourthRiver::Object* obj )
+    void Cube_ShaderPipeline()
+    {
+        FR_ShaderPipeline_Start;
+        {
+            AddModule<Core>();
+            AddModule<MVP>();
+            AddModule<Color>();
+            
+            AddModule( Texturer( "testTexture", u_samplers,
+                "color *= texture ( testTexture, UV );"
+            ));
+        }
+        FR_ShaderPipeline_End;
+    }
+
+    static void u_samplers( FourthRiver::Object* obj )
     {
         auto& sh = obj->GetComponent<FourthRiver::Components::Shader>();
-
         sh.SetUniform1i("testTexture", 0);
     }
 
