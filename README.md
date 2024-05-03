@@ -17,6 +17,3 @@ TODO:
       - Pixel Art shader, etc
   - Batch rendering support
   - Proper UI support ( fixed position, scales with window size )
-  - I'll add more things later
-
-![image](https://user-images.githubusercontent.com/61754552/218562423-f86b4261-27a7-4bae-b1e8-e8874b58fdd2.png)
