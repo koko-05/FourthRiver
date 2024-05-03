@@ -1,7 +1,9 @@
 # FourthRiver
+
+**NOTE: PROJECT IS ABANDONED**
+
 My goal is to create a pixel art renderer and creator, allowing you to modify vertex data and object data, with a custom Material system and everything.
-Basically a game engine or a blender clone, but for pixel art. This will be the basis for what I will construct in the future, and while I develop the PixelArtCreator
-I'll propably change/add/remove features from this.
+Basically a game engine or a blender clone, but for pixel art.
 
 For Now, there are a ton of things that I havent implemented:
 
